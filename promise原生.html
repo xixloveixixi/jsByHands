@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>原生promise</title>
+  </head>
+  <body>
+    <script>
+      console.log("第一步");
+      let promise = new Promise((resolve, reject) => {
+      console.log("第二步");
+
+        setTimeout(() => {
+       resolve("下次一定");
+      console.log("第四步");
+
+
+        })
+      });
+
+      // then的用法
+      promise.then(
+        (result) => {
+          console.log(result);
+        },
+        (error) => {
+          console.log(error);
+        }
+      )
+      console.log("第三步");
+
+      // 第一步
+    </script>
+    <!-- 第一步
+promise原生.html:12 第二步
+promise原生.html:28 第三步
+promise原生.html:15 第四步
+ -->
+<!-- then方法没有被执行，没有符合的状态，执行then方法，但是状态还是待定状态 -->
+  </body>
+</html>

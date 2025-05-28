@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>new的js手写代码</title>
+</head>
+<body>
+    <script>
+        function myNew(constructor , ...args) {
+  // 创建一个新的对象，而且这个新的对象的原型为函数的prototype对象
+  const obj = Object.create(constructor.prototype);
+  // 让函数的this指向这个对象
+  const res = constructor.apply(obj , args);
+  // 判断这个函数的返回值类型
+  if(res && typeof res === 'object' || typeof res === 'function'){
+    return res;
+  }else {
+    return obj;
+  }
+}
+    </script>
+
+    
+</body>
+</html>

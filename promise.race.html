@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>promiserace手写</title>
+  </head>
+  <body>
+    <script>
+    //   原生promiserace;
+      const p1 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve("p1");
+        }, 500);
+      });
+      const p2 = new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve("p2");
+        }, 100);
+      });
+      Promise.race([p1, p2]).then((value) => {
+        console.log(value); //p1
+      });
+    //   Promise.race 的逻辑是 “谁先完成，返回谁”，与 Promise 的创建顺序无关，只取决于它们的完成时间。
+    // 传入数组，返回应该新的promise
+    // 遍历数组，
+
+    </script>
+  </body>
+</html>

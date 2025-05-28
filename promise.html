@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>promise</title>
+  </head>
+  <body>
+    <script>
+      class Commitment {
+        static PENDING = "待定";
+        static FULFILLED = "成功";
+        static REJECTED = "拒绝";
+        constructor(func) {
+          // 执行的时候状态是待定
+          this.status = Commitment.PENDING;
+          // resolve和reject
+          // resolve和reject会传入一个值
+          this.result = null;
+          // 收集函数数组
+          this.resolveFunc = [];
+          this.rejectFunc = [];
+          // try...catch处理报错
+          try {
+            func(this.resolve.bind(this), this.reject.bind(this));
+          } catch (error) {
+            this.reject(error);
+          }
+        }
+        // 定义resolve
+        resolve(result) {
+          setTimeout(() => {
+            // 要先判断是否为待定状态
+            if (this.status === Commitment.PENDING) {
+              this.status = Commitment.FULFILLED;
+              this.result = result;
+              //   执行存储的函数
+              this.resolveFunc.forEach((func) => {
+                func(result);
+              });
+            }
+          });
+        }
+        // 定义reject
+        reject(result) {
+          setTimeout(() => {
+            if (this.status === Commitment.PENDING) {
+              this.status = Commitment.REJECTED;
+              this.result = result;
+              //   执行存储的函数
+              this.rejectFunc.forEach((func) => {
+                func(result);
+              });
+            }
+          });
+        }
+        // 定义then
+        then(onFULFILLED, onREJECTED) {
+          // 先判断状态
+          // 如果是待定状态，先把函数放入数组中
+          if (this.status === Commitment.PENDING) {
+            this.rejectFunc.push(onREJECTED);
+            this.resolveFunc.push(onFULFILLED);
+          }
+          onFULFILLED =
+            typeof onFULFILLED === "function" ? onFULFILLED : () => {};
+          onREJECTED = typeof onREJECTED === "function" ? onREJECTED : () => {};
+          if (this.status === Commitment.FULFILLED) {
+            setTimeout(() => {
+              onFULFILLED(this.result);
+            });
+          }
+          if (this.status === Commitment.REJECTED) {
+            setTimeout(() => {
+              onREJECTED(this.result);
+            });
+          }
+          return this;// promise链式调用
+        }
+      }
+      let commitment = new Commitment((resolve, reject) => {
+        // 创建报错
+        setTimeout(() => {
+          resolve("下次一定");
+        });
+      });
+
+      commitment.then(
+        undefined,
+        (result) => {
+          console.log(result.message);
+        }
+      ).then(
+        (result) => {
+          console.log(result);
+        },
+        (result) => {
+          console.log(result.message);
+        }
+      );
+    </script>
+    <!-- 第一步
+promise原生.html:12 第二步
+promise原生.html:28 第三步
+promise原生.html:15 第四步
+ -->
+    <!-- then方法没有被执行，没有符合的状态，执行then方法，但是状态还是待定状态 -->
+    <!-- 创建数组：先进先出，保存函数 -->
+    <!-- 第一步
+promise.html:83 第二步
+promise.html:94 第三步
+promise.html:91 下次一定
+promise.html:86 第四步 -->
+    <!-- resolve和reject是要在事件循环末尾执行的，也要加上setTimeout -->
+     <!-- then的链式调用---新的promise对象 -->
+  </body>
+</html>

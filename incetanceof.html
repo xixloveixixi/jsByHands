@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+     const arr = [1,2,3,4,5]
+     console.log(arr instanceof Array); // true
+     console.log(arr instanceof Object); // true
+     console.log(arr.__proto__ === Array.prototype); // true
+     console.log(arr.__proto__=== Object.prototype); // true
+     console.log(arr.__proto__.__proto__ === Object.prototype); // true
+     console.log(arr.__proto__.__proto__.__proto__ === null); // true
+    //  arr的原型链：arr->Array.prototype->Object.prototype->null
+    // instanceof:就是判断原型链的关系
+    function getIncetanceof(target , type){
+        // 1、target的原型链
+        let targetProto = target.__proto__;
+        // 2、循环判断
+        while(true){
+            if(targetProto === null){
+                return false;
+            }else if(targetProto === type.prototype){
+                return true;
+            }else{
+                // 都没有的时候就要更新targetProto
+                targetProto = targetProto.__proto__;
+            }
+        }
+    }
+   console.log(getIncetanceof(arr, Array) ) //true
+   console.log(getIncetanceof(arr, Object) )  //true
+    console.log(getIncetanceof(arr, String) )  //false
+
+    </script>
+    
+</body>
+</html>
