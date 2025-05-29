@@ -783,3 +783,29 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
         }
 ```
 
+## 7、手写防抖函数
+
+**什么是防抖函数？举个例子！**
+
+当你在上电梯的时候，你准备关门，关门的时间是2s，但是在此期间有人进来了，你又要关门，时间又是2s.
+
+**什么场景下可以使用防抖函数？**
+
+键盘输入实时搜索时input事件防抖，浏览器窗口改变resize事件防抖等等。
+
+**三个条件：**
+
+高频，耗时、以最后一次为准
+
+```
+        function  debounce(fn , wait){
+            let timer = null;
+            return function(){
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn();
+                } , wait)
+            }
+        }
+```
+
