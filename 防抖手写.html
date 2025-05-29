@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>防抖函数的手写</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        div {
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        let num = 0;
+        function numAdd() {
+            num++;
+            console.log(num);
+        }
+        // 当鼠标在按钮当中停留5毫秒才进行函数的执行
+        let timer = null;//接收
+        const handleMouseOver = debounce(numAdd , 500);
+        // 现在我们让它更加的通用
+        // 防抖函数
+        // 类似于电梯：打开电梯，如果等2s，在此期间有人进入，又要等2s
+        function  debounce(fn , wait){
+            let timer = null;
+            return function(){
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn();
+                } , wait)
+            }
+        }
+
+      
+    </script>
+  <div onmouseover="handleMouseOver()">
+    鼠标移动
+</div>
+</body>
+</html>
