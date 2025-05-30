@@ -801,42 +801,20 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
         function  debounce(fn , wait){
             let timer = null;
             return function(){
+<<<<<<< HEAD
             let context = this;
             let args = arguments ; 
                 clearTimeout(timer);
                 timer = setTimeout(() => {
                     fn.apply(context , args);//保证函数的上下文和参数与原始调用时一致
+=======
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn();
+>>>>>>> 42a7aba2d6cd41f3ff44d060a1dafecff7a79dc6
                 } , wait)
             }
         }
 ```
 
-## 8、节流函数
-
-**什么是节流函数？**
-
-指规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行，如果在同一个单位时间内某事件被触发多次，只有一次能生效。
-
-**与防抖函数有什么区别？**
-
-防抖函数是延迟函数执行，直到事件停止触发一段时间后再执行，适用于需要等待事件停止触发后再执行的场景。而节流函数则是控制函数在指定时间内只执行一次，适用于需要控制执行频率的场景。
-
-```
-   function throttle(fn, wait) {
-        let preTime = new Date();
-        return function () {
-            let context = this;
-            let args = arguments;
-            let curTime = new Date();
-            let during = curTime - preTime;
-            if (during > wait) {
-                // 当时间大于等待时间的时候
-                // 执行函数
-                fn.apply(context, args);
-                // 更新 preTime
-                preTime = curTime;
-            }
-        };
-    }
-```
-
+>>>>>>> 
