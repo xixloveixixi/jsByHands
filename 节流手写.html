@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写节流函数</title>
+</head>
+<body>
+<script>
+    function throttle(fn, wait) {
+        let preTime = new Date();
+        return function () {
+            let context = this;
+            let args = arguments;
+            let curTime = new Date();
+            let during = curTime - preTime;
+            if (during > wait) {
+                // 当时间大于等待时间的时候
+                // 执行函数
+                fn.apply(context, args);
+                // 更新 preTime
+                preTime = curTime;
+            }
+        };
+    }
+
+    // 示例用法
+    function logMessage(message) {
+        console.log(message);
+    }
+
+    const throttledLog = throttle(logMessage, 1000);
+
+    // 模拟快速连续调用
+    throttledLog("Hello");
+    throttledLog("World");
+    throttledLog("!");
+</script>
+
+    
+</body>
+</html>

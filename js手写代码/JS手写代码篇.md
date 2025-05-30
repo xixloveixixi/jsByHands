@@ -783,3 +783,60 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
         }
 ```
 
+## 7、手写防抖函数
+
+**什么是防抖函数？举个例子！**
+
+当你在上电梯的时候，你准备关门，关门的时间是2s，但是在此期间有人进来了，你又要关门，时间又是2s.
+
+**什么场景下可以使用防抖函数？**
+
+键盘输入实时搜索时input事件防抖，浏览器窗口改变resize事件防抖等等。
+
+**三个条件：**
+
+高频，耗时、以最后一次为准
+
+```
+        function  debounce(fn , wait){
+            let timer = null;
+            return function(){
+            let context = this;
+            let args = arguments ; 
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn.apply(context , args);//保证函数的上下文和参数与原始调用时一致
+                } , wait)
+            }
+        }
+```
+
+## 8、节流函数
+
+**什么是节流函数？**
+
+指规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行，如果在同一个单位时间内某事件被触发多次，只有一次能生效。
+
+**与防抖函数有什么区别？**
+
+防抖函数是延迟函数执行，直到事件停止触发一段时间后再执行，适用于需要等待事件停止触发后再执行的场景。而节流函数则是控制函数在指定时间内只执行一次，适用于需要控制执行频率的场景。
+
+```
+   function throttle(fn, wait) {
+        let preTime = new Date();
+        return function () {
+            let context = this;
+            let args = arguments;
+            let curTime = new Date();
+            let during = curTime - preTime;
+            if (during > wait) {
+                // 当时间大于等待时间的时候
+                // 执行函数
+                fn.apply(context, args);
+                // 更新 preTime
+                preTime = curTime;
+            }
+        };
+    }
+```
+
