@@ -777,3 +777,68 @@ Promise.race() 静态方法接受一个 promise 可迭代对象作为输入，�
 
 =======
 
+##   9、手写类型判断函数
+
+ 手写完成这个函数：输入一个对象(value)，返回它的类型
+
+**js中的数据类型：**
+
+- 值类型：String、Number、Boolean、Null、Undefied、Symbol
+- 引用类型：Object、Array、Function、RegExp、Date
+
+使用typeOf判断类型，但是null返回的是object， 只能判断值类型，其他返回的是object，Object.prototype.toString.call():判断数据类型
+
+**大概思路：**
+
+先使用typeof判断输入对象的类型，如果是值类型就直接返回typeof识别到的类型，如果不是就要使用Object.prototype.toString.call()返回表示对象类型的字符串。
+
+**代码：**
+
+```
+    function getType(value){
+            // 对于null要添加一个特殊的检查
+            if(value === null){
+                return value + "";
+            }
+            // 分两个方面：直接使用typeof和使用Object.prototype.toString.call
+            // 如果是值类型：、
+            if(typeof value !== 'object'){//小写
+                return typeof value;
+            }else {
+                // 如果是对象，就要使用Object.prototype.toString.call
+                const valueContext = Object.prototype.toString.call(value).slice(8 , -1).toLowerCase();
+                return valueContext;
+            }
+        }
+```
+
+**为什么要使用call???**
+
+- `Object.prototype.toString` 直接调用时，`this` 默认指向 `Object.prototype`，因此返回 `"[object Object]"`。
+- `Object.prototype.toString.call(value)` 使用 `call` 方法调用时，可以显式地指定 `this` 的值为 `value`，因此返回 `value` 的字符串表示。
+
+
+```
+    function getType(value){
+            // 对于null要添加一个特殊的检查
+            if(value === null){
+                return value + "";
+            }
+            // 分两个方面：直接使用typeof和使用Object.prototype.toString.call
+            // 如果是值类型：、
+            if(typeof value !== 'object'){//小写
+                return typeof value;
+            }else {
+                // 如果是对象，就要使用Object.prototype.toString.call
+                const valueContext = Object.prototype.toString.call(value).slice(8 , -1).toLowerCase();
+                return valueContext;
+            }
+        }
+```
+
+**为什么要使用call???**
+
+- `Object.prototype.toString` 直接调用时，`this` 默认指向 `Object.prototype`，因此返回 `"[object Object]"`。
+- `Object.prototype.toString.call(value)` 使用 `call` 方法调用时，可以显式地指定 `this` 的值为 `value`，因此返回 `value` 的字符串表示。
+
+
