@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写类型识别函数</title>
+</head>
+<body>
+    <script>
+        // 手写完成这个函数：输入一个对象(value)，返回它的类型
+        // js中的数据类型：
+        // 值类型：String、Number、Boolean、Null、Undefied、Symbol
+        // 引用类型：Object、Array、Function、RegExp、Date
+        // 使用typeOf判断类型，但是null返回的是object
+        // 只能判断值类型，其他返回的是object
+        // Object.prototype.toString.call():判断数据类型
+        console.log(Object.prototype.toString.call([1,2,3]))//[object Object] [object Array]
+
+
+        function getType(value){
+            // 对于null要添加一个特殊的检查
+            if(value === null){
+                return value + "";
+            }
+            // 分两个方面：直接使用typeof和使用Object.prototype.toString.call
+            // 如果是值类型：、
+            if(typeof value !== 'object'){//小写
+                return typeof value;
+            }else {
+                // 如果是对象，就要使用Object.prototype.toString.call
+                const valueContext = Object.prototype.toString.call(value).slice(8 , -1).toLowerCase();
+                return valueContext;
+            }
+        }
+        console.log(getType(2)); // "number"
+        console.log(getType([1,2,3])); // "Array"
+        console.log(getType(null)); // "Null"
+        // 其他测试
+        console.log(getType({})); // "Object"
+        console.log(getType(function(){})); // "Function"
+        console.log(getType(/regex/)); // "RegExp"
+        console.log(getType(new Date())); // "Date"
+
+    </script>
+
+    
+</body>
+</html>
