@@ -1018,3 +1018,47 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
 - `Object.prototype.toString.call(value)` 使用 `call` 方法调用时，可以显式地指定 `this` 的值为 `value`，因此返回 `value` 的字符串表示。
 
 
+## 10、手写call函数
+
+1. **call 方法的作用**：改变函数的 `this` 指向并立即执行该函数
+2. **手动实现 call 的原理**：通过将函数作为对象的方法调用来改变 `this` 指向
+
+**代码如下：**
+
+```
+       Function.prototype.myCall = function (obj , ...args){
+            // 判断this是否为函数，只有函数才可以进行后面的调用
+            if(typeof this !== 'function'){
+                throw new TypeError("this not a function")
+            }
+            // 当obj为null或者undefied的时候obj是globalThis,其他都是对象
+            obj = (obj === null || obj === undefied ) ? globalThis : Object(obj);
+            // 大致的结构就是改变this指向加执行函数
+            // 我们最开始是直接添加一个fn的属性，但是我们是通用的，很有可能属性会相同
+            // 我们使用 es6的symbol：Symbol 来避免属性名冲突
+            const key = Symbol('temp');
+            obj[key] = this;
+            // 当存在值的时候，要接收
+            const res = obj[key](...args);
+            delete obj[key];
+            return res;
+        }
+```
+
+**重要知识点：**
+
+1.Symbol 的作用
+
+- 创建唯一的属性名，避免命名冲突
+- 适合用于临时属性的键名
+
+2.参数处理
+
+- 使用剩余参数 `...args` 收集所有传入参数
+- 展开运算符 `...` 用于传递参数列表
+
+3.边界情况处理
+
+- 检查调用者是否为函数
+- 处理 `null`/`undefined` 上下文的情况
+- 确保不污染传入的对象
