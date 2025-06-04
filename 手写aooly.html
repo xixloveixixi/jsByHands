@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写apply</title>
+</head>
+
+<body>
+    <script>
+                // 手写aooly
+        Function.prototype.myApply = function (obj, args) {//args是数组
+            // 先判断this是不是函数
+            if (typeof this !== 'function') {
+                throw new TypeError("this is not a function")
+            }
+            // 如果是null或者undefied
+            obj = obj === null || obj === undefined ? globalThis : Object(obj);
+            //    属性唯一
+            const key = Symbol('temp');
+            obj[key] = this;
+            let res = null;
+            // 要对args进行判断：null或者undefied
+            // 这里要注意一下：对args进行判断
+            // args == null 在 JavaScript 中等价于 args === null || args === undefined。
+            if (args == null) {
+                res = obj[key]();
+            } else {
+                res = obj[key](...args);
+            }
+            // 删除属性、
+            delete obj[key];
+            return res;
+        }
+        // apply的原生用法
+        function greet(greeting, name, age) {
+            console.log(greeting + ', ' + name + age);
+        }
+
+        var args = ['Hello', 'Alice', 18];
+        // 测试
+        // 原生apply
+        greet.apply(null, args);
+        // 手写apply
+        greet.myApply(null, args);
+        // 测试无参数
+        function sayHi() {
+            console.log('hi', this.name);
+        }
+        var person = { name: 'Tom' };
+        sayHi.myApply(person); // hi Tom
+
+        // greet.apply(null, args); // 输出: Hello, Alice
+        // console.log(test.call({} , 1 ,3 ));//{} 1 3
+        // // apply只有两个参数，一个指向对象，一个试数组里面有参数
+
+        // var person1 = { name: 'Alice' };
+        // var person2 = { name: 'Bob' };
+
+        // function introduce() {
+        //     console.log('Hello, my name is ' + this.name);
+        // }
+
+        // introduce.apply(person1); // 输出: Hello, my name is Alice
+        // introduce.apply(person2); // 输出: Hello, my name is Bob
+
+        // 测试
+
+
+
+
+
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1062,3 +1062,71 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
 - 检查调用者是否为函数
 - 处理 `null`/`undefined` 上下文的情况
 - 确保不污染传入的对象
+
+## 11、手写apply方法
+
+**apply方法的作用：**
+
+`apply` 是一个函数的方法，它允许你调用一个函数，同时将函数的 `this` 值设置为指定的值，并将函数的参数作为数组（或类数组对象）传递给该函数。
+
+**与call的区别：**
+
+最大的区别就是参数部分：
+
+apply：
+
+```
+function greet(greeting, name) {
+  console.log(greeting + ', ' + name);
+}
+
+var args = ['Hello', 'Alice'];
+greet.apply(null, args); // 输出: Hello, Alice
+
+```
+
+call：
+
+```
+function greet(greeting, name) {
+  console.log(greeting + ', ' + name);
+}
+
+greet.call(null, 'Hello', 'Alice'); // 输出: Hello, Alice
+
+```
+
+所以在手写的时候我们格外要注意**apply当中参数**的解决：与call不同的就是，apply里面对于args的处理不再是...args，因为传递的是一个数组，通过扩展运算符处理数组就好。
+
+```
+             // 手写aooly
+        Function.prototype.myApply = function (obj, args) {//args是数组
+            // 先判断this是不是函数
+            if (typeof this !== 'function') {
+                throw new TypeError("this is not a function")
+            }
+            // 如果是null或者undefied
+            obj = obj === null || obj === undefined ? globalThis : Object(obj);
+            //    属性唯一
+            const key = Symbol('temp');
+            obj[key] = this;
+            let res = null;
+            // 要对args进行判断：null或者undefied
+            // 这里要注意一下：对args进行判断
+            // args == null 在 JavaScript 中等价于 args === null || args === undefined。
+            if (args == null) {
+                res = obj[key]();
+            } else {
+                res = obj[key](...args);
+            }
+            // 删除属性、
+            delete obj[key];
+            return res;
+        }
+```
+
+是否对args进行判断：
+
+- 在实现 `myCall` 方法时，通常不需要对 `args` 进行判断，因为 `myCall` 方法的设计就是接受多个参数，从第二个参数开始，每个参数都会作为函数的参数传递。因此，`args` 参数是一个可变参数列表，不需要进行额外的判断。
+- 然而，在实现 `myApply` 方法时，需要对 `args` 进行判断，因为 `myApply` 方法接受一个数组或类数组对象作为参数，需要检查 `args` 是否为 `null` 或 `undefined`，如果是，则不传递任何参数；否则，使用扩展运算符 `...args` 来传递参数。
+
