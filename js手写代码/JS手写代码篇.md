@@ -1130,3 +1130,47 @@ greet.call(null, 'Hello', 'Alice'); // 输出: Hello, Alice
 - 在实现 `myCall` 方法时，通常不需要对 `args` 进行判断，因为 `myCall` 方法的设计就是接受多个参数，从第二个参数开始，每个参数都会作为函数的参数传递。因此，`args` 参数是一个可变参数列表，不需要进行额外的判断。
 - 然而，在实现 `myApply` 方法时，需要对 `args` 进行判断，因为 `myApply` 方法接受一个数组或类数组对象作为参数，需要检查 `args` 是否为 `null` 或 `undefined`，如果是，则不传递任何参数；否则，使用扩展运算符 `...args` 来传递参数。
 
+
+## 12、手写bind方法
+
+`bind` 是 Function 对象的一个方法，它主要用于创建一个新的函数，并绑定该函数的 `this` 值以及预设的参数。`bind` 方法允许你在调用函数时，指定函数的 `this` 值，并可以预先填充部分参数。
+
+与call、apply的共性：**改变this指向**
+
+但是bind与她们不相同的就是**返回一个函数**，在函数当中执行this指向的函数，这里会面临一个问题：**this是否还会指向原来的函数？？？**
+
+答案是不会，**所以我们要事先接收this指向的函数.**
+
+**代码：**
+
+```
+    // 1、创建bind函数，传入obj和参数
+        Function.prototype.myBind= function(obj , ...bindAgrs){
+            // 2.判断this
+            if(typeof this !== 'function'){
+                throw TypeError("this is not a function")
+            }
+            // 3.保存函数引用:后面会使用到的
+            const self = this;
+            // 4.返回的是function,function也是会传入参数的
+            return function(...callArgs){
+                // 5.执行这个函数(self)，我们也是新建一个属性
+                const key = Symbol('temp');
+                // 注意！！！判断是否为空
+                obj = obj ==null ? globalThis : Object(obj);
+                // obj[key] = this;
+                // 这里的 this 在返回的新函数中，指向调用新函数的对象（比如 window），而不是原始要绑定的函数。
+                obj[key] = self;
+                // 执行可能返回数据
+                const res = obj[key](...bindAgrs  , ...callArgs);
+                delete obj[key];
+                return res;
+            }
+
+        }
+```
+
+**注意：**
+
+在返回的函数里面也是要接收参数的
+

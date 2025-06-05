@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写bind</title>
+</head>
+
+<body>
+    <script>
+        // bind的基本用法
+        function greet(greeting, punctuation) {
+            console.log(`${greeting},${this.name}${punctuation}`);
+        }
+
+        const person = { name: 'Alice' };
+
+        // 创建一个新的函数，绑定 this 值为 person，并预设 greeting 参数为 'Hello'
+        // const greetAlice = greet.bind(person, 'Hello' , 'Baby');
+
+        // 调用新函数，并传入 punctuation 参数
+        // greetAlice('!'); // 输出: Hello, Alice!
+
+        // bind返回一个函数，传入的是对象以及参数(多个参数)
+        // 也是在function上面的
+        // 1、创建bind函数，传入obj和参数
+        Function.prototype.myBind= function(obj , ...bindAgrs){
+            // 2.判断this
+            if(typeof this !== 'function'){
+                throw TypeError("this is not a function")
+            }
+            // 3.保存函数引用:后面会使用到的
+            const self = this;
+            // 4.返回的是function,function也是会传入参数的
+            return function(...callArgs){
+                // 5.执行这个函数(self)，我们也是新建一个属性
+                const key = Symbol('temp');
+                // 注意！！！判断是否为空
+                obj = obj ==null ? globalThis : Object(obj);
+                // obj[key] = this;
+                // 这里的 this 在返回的新函数中，指向调用新函数的对象（比如 window），而不是原始要绑定的函数。
+                obj[key] = self;
+                // 执行可能返回数据
+                const res = obj[key](...bindAgrs  , ...callArgs);
+                delete obj[key];
+                return res;
+            }
+
+        }
+        // 测试
+        // 第一次做对60%
+        const text = greet.myBind(person , "Hello");
+        text('!');
+
+    </script>
+
+</body>
+
+</html>
