@@ -1174,3 +1174,272 @@ greet.call(null, 'Hello', 'Alice'); // 输出: Hello, Alice
 
 在返回的函数里面也是要接收参数的
 
+## 13、手写函数柯里化
+
+它将一个接受多个参数的函数转换为一系列只接受一个参数的函数
+
+举个例子：
+
+```
+ function add(a, b) {
+            return a + b;
+        }
+        console.log(add(2, 3)); // 输出：5
+        // 柯里化后：
+        function curriedAdd(a) {
+            return function (b) {
+                return a + b;
+            };
+        }
+        const add2 = curriedAdd(2); // 固定第一个参数为 2
+        console.log(add2(3)); // 输出：
+
+```
+
+柯里化   
+
+- 传入：一个函数，但是有多个参数
+- 目的：就是把多个参数进行链式调用
+
+```
+        let currying = function (func) {
+            // 参数
+            // let args = [];//这样的话,每次调用currying,都会指向第一次的args
+            // 返回函数进行链式调用,，也需要传递参数
+            return function curried(...args) {
+                // 每次链式调用都应该有自己的参数收集，可以这样递归实现：
+
+                return function result(...res) {
+                    // 当res的长度为0(不调用参数的时候，就代表要执行函数)
+                    if (res.length === 0) {
+                        return func(...args)
+                    } else {
+                        // 当在执行函数之前，就要保存参数,进行链式调用
+                        args.push(...res);
+                        return result;
+                    }
+                }
+
+            }
+
+        }
+```
+
+进行改进：
+
+```
+        // 柯里化函数：传入一个函数
+        let currying = function (func) {
+            // 开始递归返回函数
+            // ...args可以收集函数
+            return function curried(...args) {
+                // 如果参数数量足够，执行原函数
+                // 如果收集的函数参数大于等于了原函数的参数,就可以直接执行了
+                if (args.length >= func.length) {
+                    return func.apply(this, args);
+                }
+                // 否则返回一个新函数继续收集参数
+                // 当参数不足时，返回一个新函数继续收集参数
+                // 新函数将之前收集的参数(args)与新传入的参数(newArgs)合并
+                return function (...newArgs) {
+                    // 这里就是链式调用
+                    return curried.apply(this, args.concat(newArgs));
+                };
+            };
+        };
+```
+
+我写的一些问题：
+
+1. **结构复杂**：嵌套了两个函数（`curried`和`result`），逻辑不够直观
+2. **参数收集不完整**：只收集了第二次及以后的参数，第一次调用的参数没有被收集
+3. **递归使用不当**：`result`函数的递归调用方式不够优雅
+4. **链式调用逻辑有误**：当传入空参数时才执行函数，这与柯里化的常见实现方式不同
+
+## 14、实现ajax请求
+
+通过 JavaScript 的 异步通信，从服务器获取 XML 文档从中提取数据，再更新当前网页的对应部分，而不用刷新整个网页。
+
+**步骤：**
+
+- 创建一个 XMLHttpRequest 对象。
+- 设置超时时间。
+- 定义成功和失败的回调函数。
+- 监听请求状态变化，并在请求完成时检查 HTTP 状态码，调用相应的回调函数。
+- 处理网络错误和超时错误。
+- 打开请求，设置请求头和响应类型，并发送请求。
+
+**代码：**
+
+```
+const SERVER_URL = "test.json"
+// 创建请求
+const xhr = new XMLHttpRequest();
+// 设置超时时间
+const timeout = 1000;
+// 成功的回调函数
+function onSuccess(res){
+  console.log("Success:" ,  res)
+}
+// 失败的回调函数
+function onError(res){
+  console.log("Error:" , res)
+}
+
+// 监听状态：包括ajax的和http的
+xhr.onreadystatechange = () => {
+  if (xhr.readyState !== 4) return;
+  if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+   onSuccess(xhr.response);
+  }else {
+    onError(xhr.response)
+  }
+};
+// 错误的情况
+xhr.onerror = function() {
+ onError("错啦"+xhr.response);
+};2
+// 超时的情况
+xhr.ontimeout = function(){
+  onError("超时啦"+xhr.response);
+}
+// 先open
+xhr.open("GET", SERVER_URL, true);
+// 设置请求头
+xhr.setRequestHeader("Accept", "application/json");
+// 设置请求类型
+xhr.responseType = "json";
+// 发送请求
+xhr.send(null);
+```
+
+## 15、使用Promise封装AJAX请求
+
+promise就有reject和resolve了，就不必写成功和失败的回调函数了
+
+```
+   const BASEURL = './手写ajax/test.json'
+        function promiseAjax() {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("get", BASEURL, true);
+                // 设置请求头
+                xhr.setRequestHeader("accept", "application/json");
+                // 设置超时时间\
+                const timeout = 1000;
+                xhr.timeout = timeout;
+                // 监听状态:箭头函数没有this
+                xhr.onreadystatechange =  () =>  {
+                    // 监听ajax
+                    if (xhr.readyState !== 4) {
+                        return;
+                    }
+                    // 监听http
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+                        resolve(xhr.response)
+                    } else {
+                        reject(new Error(xhr.statusText))
+                    }
+                }
+                // 处理错误情况
+                xhr.onerror = () =>  {
+                    reject(new Error(xhr.statusText))
+                }
+                xhr.ontimeout =  () =>  {
+                    reject(new Error(xhr.statusText))
+                }
+                // 设置格式\
+                xhr.responseType = "json"
+                // 发送请求
+                xhr.send(null);
+            })
+        }
+        // 测试调用
+        promiseAjax().then(
+            res => console.log("成功：", res),
+            err => console.error("失败：", err)
+        );
+```
+
+## 16、浅拷贝
+
+如果拷贝的是基本数据类型，拷贝的就是基本数据类型的值(直接赋值)，如果是引用数据类型，拷贝的就是内存地址。如果其中一个对象的引用内存地址发生改变，另一个对象也会发生变化。(动态的)
+
+**看看各种浅拷贝：**
+
+- es6的浅拷贝 :assign
+
+  ```
+  const obj1 = { a: 1, b: 2 };
+          const obj2 = { c: 3, d: 4 };
+          const shallowCopy1 = Object.assign({}, obj1, obj2);
+          console.log('es6浅拷贝:', shallowCopy1); // { a: 1, b: 2, c: 3, d: 4 }
+  ```
+
+- 扩展运算符
+
+  ```
+   const shallowCopy2 = { ...obj1, ...obj2 };
+          console.log('扩展运算符浅拷贝:', shallowCopy2); // { a: 3, b: 4 }
+  ```
+
+- 数组中的方法：slice
+
+  ```
+          const arr = [1, 2, 3, 4];
+          const shallowCopy3 = arr.slice();
+          console.log('数组slice浅拷贝:', shallowCopy3); // [1, 2, 3, 4]
+  ```
+
+- concat:合并两个或多个数组。此方法不会更改现有数组，而是返回一个新数组。
+
+  ```
+    const arr2 = [5, 6, 7];
+          const shallowCopy4 = arr.concat(arr2);
+          console.log('数组concat浅拷贝:', shallowCopy4); // [1, 2, 3, 4, 5, 6, 7]
+  ```
+
+  ​
+
+**浅拷贝的核心逻辑是：**
+
+1. 判断输入是否为对象
+   - 如果不是对象（如 `number`、`string`），直接返回原值（因为基本类型不需要拷贝）。
+   - 如果是对象或数组，则创建一个新对象/数组。
+2. 遍历属性并复制
+   - 使用 `for...in` 遍历对象的所有可枚举属性。
+   - 用 `hasOwnProperty` 过滤掉原型链上的属性，只拷贝自身属性。
+   - 将属性值直接赋给新对象（如果是对象，则保持引用）。
+
+**代码：**
+
+```
+    function shallowCopy(obj) {
+            // 判断obj是否为对象，只拷贝对象
+            if (!obj || typeof obj !== 'object') {
+                return obj;
+            }
+            // 判断obj的类型
+            const newObj = Array.isArray(obj) ? [] : {};
+            // 进行遍历，是obj的属性我们才进行拷贝
+            // 仅对对象和数组及逆行拷贝
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = obj[key];
+                }
+            }
+            // 返回 newObj;
+            return newObj;
+        }
+```
+
+**浅拷贝的局限性：**
+
+浅拷贝只能处理**一层**的拷贝：
+
+- 如果对象的属性是**嵌套对象**，浅拷贝只会复制引用，而不是新对象。
+
+
+
+
+

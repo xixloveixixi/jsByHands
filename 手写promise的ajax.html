@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>promise包裹ajax</title>
+    <!-- <link rel="stylesheet" href="./手写ajax/test.json"> -->
+</head>
+
+<body>
+    <script>
+        const BASEURL = './手写ajax/test.json'
+        function promiseAjax() {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("get", BASEURL, true);
+                // 设置请求头
+                xhr.setRequestHeader("accept", "application/json");
+                // 设置超时时间\
+                const timeout = 1000;
+                xhr.timeout = timeout;
+                // 监听状态:箭头函数没有this
+                xhr.onreadystatechange =  () =>  {
+                    // 监听ajax
+                    if (xhr.readyState !== 4) {
+                        return;
+                    }
+                    // 监听http
+                    if ((xhr.status >= 200 && xhr.status < 300) || xhr.status === 304) {
+                        resolve(xhr.response)
+                    } else {
+                        reject(new Error(xhr.statusText))
+                    }
+                }
+                // 处理错误情况
+                xhr.onerror = () =>  {
+                    reject(new Error(xhr.statusText))
+                }
+                xhr.ontimeout =  () =>  {
+                    reject(new Error(xhr.statusText))
+                }
+                // 设置格式\
+                xhr.responseType = "json"
+                // 发送请求
+                xhr.send(null);
+            })
+        }
+        // 测试调用
+        promiseAjax().then(
+            res => console.log("成功：", res),
+            err => console.error("失败：", err)
+        );
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写柯里化</title>
+</head>
+
+<body>
+    <script>
+        function add(a, b) {
+            return a + b;
+        }
+        console.log(add(2, 3)); // 输出：5
+        // 柯里化后：
+        function curriedAdd(a) {
+            return function (b) {
+                return a + b;
+            };
+        }
+        const add2 = curriedAdd(2); // 固定第一个参数为 2
+        console.log(add2(3)); // 输出：
+
+        // 传入：一个函数，但是有多个参数
+        // 目的：就是把多个参数进行链式调用
+        // let currying = function (func) {
+        //     // 参数
+        //     // let args = [];//这样的话,每次调用currying,都会指向第一次的args
+        //     // 返回函数进行链式调用,，也需要传递参数
+        //     return function curried(...args) {
+        //         // 每次链式调用都应该有自己的参数收集，可以这样递归实现：
+
+        //         return function result(...res) {
+        //             // 当res的长度为0(不调用参数的时候，就代表要执行函数)
+        //             if (res.length === 0) {
+        //                 return func(...args)
+        //             } else {
+        //                 // 当在执行函数之前，就要保存参数,进行链式调用
+        //                 args.push(...res);
+        //                 return result;
+        //             }
+        //         }
+
+        //     }
+
+        // }
+        // 柯里化函数：传入一个函数
+        let currying = function (func) {
+            // 开始递归返回函数
+            // ...args可以收集函数
+            return function curried(...args) {
+                // 如果参数数量足够，执行原函数
+                // 如果收集的函数参数大于等于了原函数的参数,就可以直接执行了
+                if (args.length >= func.length) {
+                    return func.apply(this, args);
+                }
+                // 否则返回一个新函数继续收集参数
+                // 当参数不足时，返回一个新函数继续收集参数
+                // 新函数将之前收集的参数(args)与新传入的参数(newArgs)合并
+                return function (...newArgs) {
+                    // 这里就是链式调用
+                    return curried.apply(this, args.concat(newArgs));
+                };
+            };
+        };
+
+
+        // 测试
+        function sum(a, b, c) {
+            return a + b + c;
+        }
+        let curriedSum = currying(sum);
+        console.log(curriedSum(4, 5)(6)()); // 输出 15
+        console.log(curriedSum(7, 8, 9)()); // 输出 24
+        // ...existing code...
+
+
+    </script>
+</body>
+
+</html>
