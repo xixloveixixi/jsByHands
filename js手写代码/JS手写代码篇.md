@@ -1437,9 +1437,36 @@ promise就有reject和resolve了，就不必写成功和失败的回调函数了
 
 浅拷贝只能处理**一层**的拷贝：
 
-- 如果对象的属性是**嵌套对象**，浅拷贝只会复制引用，而不是新对象。
+- 如果对象的属性是**嵌套对象**，浅拷贝只会复制引用，复制的是对应的地址，如果需改的话原来的也需要同步修改，而不是新对象。
 
 
 
 
+## 17、深拷贝
+
+深拷贝与浅拷贝最大的不同就是对象的属性是**嵌套对象**，会新建一个对象
+
+步骤：
+
+- 判断是否为对象
+- 判断是否为i数组或者对象，给新的有个容器
+- 遍历循环，如果是对象要遍历循环，采用递归
+
+```
+ function deepCopy(obj){
+            // 判断是否为对象
+            if(!obj || typeof obj !== 'object'){
+                return obj;
+            }
+            // 判断是否为数组或者是都西昂
+            newCopy = Array.isArray(obj) ? [] : {};
+            // 进行遍历，如果是对象的话重新使用deep函数
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newCopy[key] =  typeof key === 'object' ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newCopy;
+        }
+```
 

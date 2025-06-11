@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写深拷贝</title>
+</head>
+<body>
+    <script>
+        // 1、Json里卖弄的阿方法
+        // JSON.parse(JSON.stringify(obj))是目前比较常用的深拷贝方法之一
+        // 它的原理就是利用JSON.stringify 将js对象序列化（JSON字符串），
+        // 再使用JSON.parse来反序列化(还原)js对象。
+        const obj1 = {
+            name :"jyx",
+            age : 21,
+            address : {
+                city : "chongqing",
+                street : "guanyinqiao"
+            }
+        }
+        // 使用JSON方法进行深拷贝
+        const deepCopy1 = JSON.parse(JSON.stringify(obj1));
+        // 对其进行修改
+        obj1.address.city = "beijing";
+        // 输出原对象和深拷贝对象
+        console.log("原对象:", obj1);
+        console.log("深拷贝对象:", deepCopy1);
+        // 但是有个问题就是如果对象中有函数、undefined、Symbol等类型的值，或者循环引用的对象，这种方法就无法正确处理。
+        // 实现深拷贝函数
+        // 对于嵌套的使用递归方法
+        function deepCopy(obj){
+            // 判断是否为对象
+            if(!obj || typeof obj !== 'object'){
+                return obj;
+            }
+            // 判断是否为数组或者是都西昂
+            newCopy = Array.isArray(obj) ? [] : {};
+            // 进行遍历，如果是对象的话重新使用deep函数
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newCopy[key] =  typeof key === 'object' ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newCopy;
+        }
+        // 测试
+        // console.log('深拷贝手写')
+        const deepCopy2 = deepCopy(obj1);
+        // 对其进行修改
+        obj1.address.city = "shanghai";
+        // 输出原对象和深拷贝对象
+        console.log("原对象:", obj1);
+        console.log("深拷贝对象:", deepCopy2);
+        
+
+
+    </script>
+    
+</body>
+</html>
