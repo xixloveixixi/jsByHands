@@ -1470,3 +1470,25 @@ promise就有reject和resolve了，就不必写成功和失败的回调函数了
         }
 ```
 
+## 18、sleep
+
+ sleep通常用于在代码中引入延迟，以模拟等待某个操作完成的过程
+
+在JavaScript中，可以使用Promise和setTimeout来实现sleep功能
+
+**代码如下：**
+
+```
+        function sleep(ms){
+            // ms参数表示要等待的时间，单位为毫秒
+            // 返回一个Promise对象，使用setTimeout来延迟执行
+            return new Promise((resolve , reject) => {
+                setTimeout(()=> {
+                    // 当延迟时间到达时，调用resolve函数来解决Promise
+                    resolve();
+                } , ms)
+            })
+        }
+```
+
+总结：sleep就是休眠，引入延迟，这种情况下我们就要想到setTimeout,虽然`setTimeout`本身可以用来实现延迟操作，但使用Promise封装`setTimeout`可以带来更多的灵活性和可读性。Promise提供了更好的错误处理机制、链式调用、可读性和可维护性，使得异步代码更加清晰和易于管理。

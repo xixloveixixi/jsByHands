@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写sleep</title>
+</head>
+<body>
+    <script>
+        // sleep通常用于在代码中引入延迟，以模拟等待某个操作完成的过程
+        // 在JavaScript中，可以使用Promise和setTimeout来实现sleep功能
+        function sleep(ms){
+            // ms参数表示要等待的时间，单位为毫秒
+            // 返回一个Promise对象，使用setTimeout来延迟执行
+            return new Promise((resolve , reject) => {
+                setTimeout(()=> {
+                    // 当延迟时间到达时，调用resolve函数来解决Promise
+                    resolve();
+                } , ms)
+            })
+        }
+        // 测试
+        async function testSleep() {
+            console.log("开始sleep");
+            await sleep(2000); // 等待2000毫秒（2秒）
+            console.log("sleep结束");
+        }
+        testSleep();
+    </script>
+    
+</body>
+</html>
