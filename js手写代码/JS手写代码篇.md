@@ -1492,3 +1492,56 @@ promise就有reject和resolve了，就不必写成功和失败的回调函数了
 ```
 
 总结：sleep就是休眠，引入延迟，这种情况下我们就要想到setTimeout,虽然`setTimeout`本身可以用来实现延迟操作，但使用Promise封装`setTimeout`可以带来更多的灵活性和可读性。Promise提供了更好的错误处理机制、链式调用、可读性和可维护性，使得异步代码更加清晰和易于管理。
+
+# 19、Object.assign
+
+**作用：**
+
+ Object.assign的作用是将源对象的所有可枚举属性复制到目标对象中。它返回目标对象。
+
+```
+ const obj1 = { a: 1, b: 2 };
+        const obj2 = { b: 3, c: 4 };
+        const obj3 = { d: 5 };
+        const target = {};
+        Object.assign(target, obj1, obj2, obj3);
+        console.log(target); // { a: 1, b: 3, c: 4, d: 5 }
+```
+
+**我的手写代码：**
+
+```
+ // 手写：输入多个参数...参数，对参数进行遍历，保存再目标对象中
+        function myAssign(target , ...args){
+            // 1、对target进行判断
+            if(target === null || target === undefied){
+                return new TypeError('target不能为null或者undefied');
+            }
+            // 2、确保target是一个对象
+            target === typeof target === 'object' ? target : Object(target);
+            // 3、循环args
+            // console.log(args);
+            args.forEach((item) => {
+                // 4、遍历item的每个属性
+                for(let key in item){
+                   if(item.hasOwnProperty(key)){
+                     target[key] = item[key];
+                   }
+                }
+            })
+            // 5、返回target
+            return target
+        }
+```
+
+**测试结果：**
+
+```
+  console.log(myAssign(target, obj1, obj2, obj3)); // { a: 1, b: 3, c: 4, d: 5 }
+```
+
+**总结：**
+
+因为之前做的浅拷贝有这个函数，写的时候觉得和浅拷贝差不多，最开始没有对target继续宁类型判断只有7分，后面就添加了一个判断。总的思路其实就是遍历传来的参数，遍历参数的属性，添加属性到目标数组就可以了。
+
+注意，item不是可迭代对象，在遍历它的属性的时候要使用for...in

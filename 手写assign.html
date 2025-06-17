@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写assign函数</title>
+</head>
+<body>
+    <script>
+        // Object.assign的作用是将源对象的所有可枚举属性复制到目标对象中。它返回目标对象。
+        const obj1 = { a: 1, b: 2 };
+        const obj2 = { b: 3, c: 4 };
+        const obj3 = { d: 5 };
+        const target = {};
+        Object.assign(target, obj1, obj2, obj3);
+        console.log(target); // { a: 1, b: 3, c: 4, d: 5 }
+        // 手写：输入多个参数...参数，对参数进行遍历，保存再目标对象中
+        function myAssign(target , ...args){
+            // 1、对target进行判断
+            if(target === null || target === undefied){
+                return new TypeError('target不能为null或者undefied');
+            }
+            // 2、确保target是一个对象
+            target === typeof target === 'object' ? target : Object(target);
+            // 3、循环args
+            // console.log(args);
+            args.forEach((item) => {
+                // 4、遍历item的每个属性
+                for(let key in item){
+                   if(item.hasOwnProperty(key)){
+                     target[key] = item[key];
+                   }
+                }
+            })
+            // 5、返回target
+            return target
+        }
+        console.log(myAssign(target, obj1, obj2, obj3)); // { a: 1, b: 3, c: 4, d: 5 }
+        
+
+    </script>
+    
+</body>
+</html>
