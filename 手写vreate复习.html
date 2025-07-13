@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写create复习</title>
+</head>
+<body>
+    <script>
+        function myCreate(constructor){
+            // 1、判断类型
+            if(typeof constructor !== 'object' &&  constructor !== null){
+                throw new Error('类型错误');
+            }
+            // 2、新建一个对象
+            const newObj = {};
+            // 3、设置原型链
+            Object.setPrototypeOf(newObj , constructor);
+            // 4、返回
+            return newObj;
+
+        }
+const person = {
+    name: 'John',
+    age: 30
+};
+const student = myCreate(person); // 传入的是原型对象
+student.grade = 'A';
+console.log(student); // { grade: 'A' }，__proto__ 指向 person
+console.log(myCreate(null))
+    </script>
+    
+</body>
+</html>

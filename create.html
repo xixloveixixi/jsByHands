@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ObjectCreate</title>
 </head>
 <body>
     <script>
-        // 手写 Object.create 
-function create (obj) {
-    // 构造函数
-    function F(){};
-    // 让F的原型为obj
-    F.prototype = obj;
-    // 返回F，记得要实例化
-    return new F();
-}
-let person = { name : 'jyx' };
-let child = Object.create(person);
-console.log(child);
-let child1 = create(person);
-console.log(child1);
+      function myObjectCreate(newObj , oldObj){
+        console.log(typeof newObj);
+        if(typeof newObj !== 'object' || newObj === null){
+            throw new Error('第一个参数必须是一个对象');
+        }
+
+        Object.setPrototypeOf(newObj , oldObj);
+        return newObj;
+
+      }
+
+        const person = {
+            name: 'John',
+            age: 30
+        };
+        const newObjbj = {};
+        const student = myObjectCreate(newObjbj, person);
+        student.grade = 'A';
+        console.log(null); // { grade: 'A' }
+
+
     </script>
     
 </body>

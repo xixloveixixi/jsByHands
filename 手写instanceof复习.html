@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>instance of 复习</title>
+</head>
+<body>
+    <script>
+        function myInstanceOf(constructor , obj){
+            let curPrototype = Object.getPrototypeOf(obj);
+            while(curPrototype !== null){
+                if(curPrototype === constructor.prototype){
+                    return true;
+                }
+                curPrototype = Object.getPrototypeOf(curPrototype);
+
+            }
+            return false;
+            
+        }
+    </script>
+    
+</body>
+</html>

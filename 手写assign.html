@@ -7,6 +7,12 @@
 </head>
 <body>
     <script>
+        nums1 = [1,2,3,0,0,0];
+        let m = 3;
+        nums2 = [2,5,6];
+        nums1 = nums1.slice(0 , m);
+        console.log([...nums1 , ...nums2].sort((a , b) => a- b));
+        console.log(nums1.slice(0 , 2))
         // Object.assign的作用是将源对象的所有可枚举属性复制到目标对象中。它返回目标对象。
         const obj1 = { a: 1, b: 2 };
         const obj2 = { b: 3, c: 4 };

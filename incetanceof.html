@@ -7,33 +7,37 @@
 </head>
 <body>
     <script>
-     const arr = [1,2,3,4,5]
-     console.log(arr instanceof Array); // true
-     console.log(arr instanceof Object); // true
-     console.log(arr.__proto__ === Array.prototype); // true
-     console.log(arr.__proto__=== Object.prototype); // true
-     console.log(arr.__proto__.__proto__ === Object.prototype); // true
-     console.log(arr.__proto__.__proto__.__proto__ === null); // true
-    //  arr的原型链：arr->Array.prototype->Object.prototype->null
-    // instanceof:就是判断原型链的关系
-    function getIncetanceof(target , type){
-        // 1、target的原型链
-        let targetProto = target.__proto__;
-        // 2、循环判断
-        while(true){
-            if(targetProto === null){
-                return false;
-            }else if(targetProto === type.prototype){
-                return true;
-            }else{
-                // 都没有的时候就要更新targetProto
-                targetProto = targetProto.__proto__;
-            }
-        }
+    //  手写instanceof方法:传入两个参数，返回true或者false  看看原型链上有没有
+
+    const person = {
+        name : 'John',
+        age : 30
     }
-   console.log(getIncetanceof(arr, Array) ) //true
-   console.log(getIncetanceof(arr, Object) )  //true
-    console.log(getIncetanceof(arr, String) )  //false
+    const student = Object.create(person);
+    // console.log(student instanceof Object);
+    // console.log(null instanceof Object); // false
+    function myInstanceof(curObj , compareObj){
+    //    1、先获取compareObj的原型链
+        let prototype = compareObj.prototype;
+        // 2、当前比较的curObj的原型，因为我们要遍历它的原型链
+        let curPrototype = Object.getPrototypeOf(curObj);
+        // 开始遍历
+        while(curPrototype !== null){
+            if(curPrototype === prototype){
+                return true;
+            }
+            curPrototype = Object.getPrototypeOf(curPrototype);
+        }
+        return false;
+
+    }
+    console.log(myInstanceof(student, Object)); // true   
+    // instanceof的手写就是判断当前的对象的原型链(curObj)上是否有传入的构造函数的原型(compareObj)。
+    // 一些方法：
+    // Object.getPrototypeOf(obj)  获取对象的原型
+    // Object.prototype:获取构造对象的原型
+
+
 
     </script>
     
