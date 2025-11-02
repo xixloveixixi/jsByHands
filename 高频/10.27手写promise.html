@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写promise</title>
+</head>
+
+<body>
+    <script>
+        class Promise {
+            static PENDING = '待定'
+            static FULLFILLED = '成功'
+            static REJECTED = '失败'
+            constructor(func) {
+                this.result = null;
+                this.resolveCallBacks = [];
+                this.rejectCallBacks = [];
+                this.status = Promise.PENDING;
+                try {
+                    func(this.resolve.bind(this) , this.reject.bind(this));
+                } catch (error) {
+                  this.reject(error);
+                }
+
+            }
+            resolve(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.FULLFILLED;
+                    this.result = result;
+                    this.resolveCallBacks.forEach((func) => {
+                        queueMicrotask(() => {
+                            func(this.result);
+                        })
+                    })
+                }
+
+            }
+            reject(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.REJECTED;
+                    this.result = result;
+                    this.rejectCallBacks.forEach((func) => {
+                        queueMicrotask(() => {
+                            func(this.result);
+                        })
+                    })
+                }
+            }
+            then(onFulfilled, onRejected) {
+                const self = this;
+                return new Promise((resolve , reject) => {
+                    onFulfilled = typeof onFulfilled ==="function" ? onFulfilled : (result) => {return result};
+                    onRejected = typeof onRejected ==="function" ? onRejected : (error) => {throw error};
+                    const handelCallbacks = (backs, result) => {
+                        try {
+                            const res = backs(result);
+                            if (res instanceof Promise) {
+                                 res.then(resolve, reject);
+                            }else {
+                                 resolve(res);
+                            }
+                        } catch (error) {
+                            reject(error)
+                        }
+
+                    }
+                    switch (self.status) {
+                        case Promise.PENDING:
+                            self.resolveCallBacks.push((result) => handelCallbacks(onFulfilled, result));
+                            self.rejectCallBacks.push((result) => handelCallbacks(onRejected, result));
+                            break;
+                        case Promise.FULLFILLED:
+                            handelCallbacks(onFulfilled, self.result);
+                            break;
+                        case Promise.REJECTED:
+                            handelCallbacks(onRejected, self.result);
+                            break;
+                    }
+                })
+
+            }
+            all(promises){
+                let resultArr = [];
+                let count = 0 ; 
+                return new Promise((resolve , reject) => {
+                    for(let i= 0 ; i < promises.length ; i++){
+                    Promise.resolve(promises[i]).then(val => {
+                        resultArr[i] = val;
+                        count++;
+                        if(count === promises.length){
+                            resolve(resultArr);
+                        }
+                    },reject)
+                }
+
+                })
+            }
+            race(promises){
+               return new Promise((resolve , reject) => {
+ for(let i = 0 ; i < promises.length ; i++){
+                    promises[i].then(resolve , reject);
+                }
+               })
+            }
+        }
+    </script>
+
+</body>
+
+</html>

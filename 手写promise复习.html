@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写promise练习</title>
+</head>
+
+<body>
+    <script>
+        class Promise {
+            // 1、定义状态
+            static PENDING = '待定'
+            static ONFULFILLED = '成功'
+            static ONREJECTED = '失败'
+            // 2、constructor初始化
+            constructor(func) {
+                this.status = Promise.PENDING;
+                this.result = null;
+                this.resolveCallBacks = [];
+                this.rejectedCallBacks = [];
+                try {
+                    func(this.resolve.bind(this), this.reject.bind(this));
+                } catch (error) {
+                    this.reject(error);
+                }
+            }
+            // 3、resolve和reject
+            resolve(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.ONFULFILLED;
+                    this.result = result;
+                    this.resolveCallBacks.forEach(func => {
+                        func(result);
+                    });
+
+                }
+            }
+            reject(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.ONREJECTED;
+                    this.result = result;
+                    this.rejectCallBacks.forEach(func => {
+                        func(result);
+                    });
+
+                }
+            }
+            // 4、定义then
+            then(onFulfilled, onRejected) {
+                onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+                onRejected = typeof onRejected === 'function' ? onRejected : reason => { throw reason };
+
+                const self = this;
+                return new Promise((resolve, reject) => {
+                    const handelCallBacks = (callback, result) => {
+                        try {
+                            const res = callback(result);
+                            return res instanceof Promise ? res.then(resolve, reject) : resolve(res);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    }
+                    switch (self.status) {
+                        case Promise.PENDING: {
+                            this.resolveCallBacks.push(value => handelCallBacks(onFulfilled, self.result));
+                            this.rejectedCallBacks.push(value => handelCallBacks(onRejected, self.result));
+                            break;
+                        }
+                        case Promise.ONFULFILLED: {
+                            setTimeout(() => { handelCallBacks(onFulfilled, self.result) }, 0);
+                            break;
+                        }
+                        case Promise.ONREJECTED: {
+                            setTimeout(() => { handelCallBacks(onRejected, self.result) }, 0);
+                            break;
+                        }
+
+                    }
+
+
+                })
+
+            }
+            all(promises) {  
+                return new Promise((resolve, reject) => {
+                    let count = 0;
+                    let len = promises.length;
+                    let resultArr = new Array(len);
+                    if(len === 0){
+                        resolve(resultArr);
+                        return;
+                    }
+                    for (let i = 0; i < len; i++) {
+                     Promise.resolve(
+                        promises[i]
+                       .then(value => {
+                        count++;
+                        resultArr[i] = value;
+                        if(count === len){
+                            resolve(resultArr);
+                        }
+                       }
+                    )).catch((reason) => {
+                        reject(reason)
+                       })
+
+                    }
+
+                })
+
+            }
+            race(promises){
+                return new Promise((resolve , reject) => {
+                    for(let i = 0 ; i < promises.length ; i++){
+                        promises[i].then(resolve , reject);
+                    }
+
+                })
+            }
+        }
+    </script>
+
+</body>
+
+</html>

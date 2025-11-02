@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.13练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、手写ajax
+        function myAjax() {
+            const SERVER_URL = '/server';
+            const xhr = new XMLHttpRequest();
+            xhr.setRequestHeader("Acception", "/application");
+            xhr.responseType = "json";
+            xhr.onreadystatechange = function () {
+                if (this.readyState !== 2) {
+                    return false;
+                }
+                if (this.status !== 200) {
+                    xhr.onerror(xhr.responseText);
+                } else {
+                    console.log(xhr.responseText);
+                }
+            }
+            xhr.onerror = function (err) {
+                console.log(err);
+            }
+            xhr.send();
+        }
+        // 2、日期格式化函数
+        console.log(formatDate(new Date('2020-12-01'), 'yyyy/MM/dd'))
+        function formatDate(data, format) {
+            const year = data.getFullYear();
+            const month = data.getMonth() + 1;
+            const date = data.getDate();
+            format = format.replace("yyyy", year);
+            format = format.replace("MM", month);
+            format = format.replace("dd", date);
+            return format;
+        }
+        // 3、数组求和
+        function sum(arr) {
+            const sum = arr.reduce((total, cur) => total += cur, 0);
+            return sum;
+        }
+        console.log(sum([1, 2, 3]));
+        // 4、数组去重
+        let arr = [1, 1, 3, 4, 2, 3, 4];
+        console.log(Array.from(new Set(arr)));
+        // 5、实现数组的flat方法
+        // function flat
+        // console.log(flatArr.flat(1));
+        // 类似于扁平化，但是可以给出深度
+        Array.prototype.myFlat = function (deep = 1) {
+            let newArr = [];
+            function flatter(curArr, depth) {
+                for (let i = 0; i < curArr.length; i++) {
+                    if (Array.isArray(curArr[i]) && depth > 0) {
+                        flatter(curArr[i], depth - 1);
+                    } else {
+                        newArr.push(curArr[i]);
+                    }
+                }
+            }
+            flatter(this, deep);
+            return newArr;
+        };
+
+        const flatArr = [1, [2, [3, [4]]]];
+        console.log(flatArr.myFlat(1)); // [1, 2, [3, [4]]]
+        console.log(flatArr.myFlat(2)); // [1, 2, 3, [4]]
+        console.log(flatArr.myFlat(Infinity)); // [1, 2, 3, 4]
+    </script>
+
+</body>
+
+</html>

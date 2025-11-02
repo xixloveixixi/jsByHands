@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 防抖和节流：
+        // 防抖：遇到timer就要重新执行
+        function debounce(func , wait){
+            let timer = null;
+            return function(...args){
+                if(timer){
+                    clearTimeout(timer);
+                }
+                const context = this;
+                timer = setTimeout(() => {
+                    func.apply(context , args);
+                })
+            }
+        }
+        // 节流：一段时间内只触发最后一次
+        function throttle(func , delay){
+            let lastDate = 0;
+            return function(...args){
+                let nowDate = Date.now();
+                const context = this;
+
+                if(nowDate - lastDate >= delay){
+                    func.apply(context , args);
+                    lastDate = nowDate;
+                }
+
+            }
+
+        }
+        
+    </script>
+    
+</body>
+</html>

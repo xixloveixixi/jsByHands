@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.26练习</title>
+</head>
+
+<body>
+    <input type="text" id="input" >
+    <span id="span"></span>
+    <script>
+        // 1、手写bind
+        // const fn = () => { };
+        // //   fn.bind(thisArg: any, ...argArray: any[])
+        // Function.prototype.myBind = function (context, ...args) {
+        //     if (typeof this !== "function") {
+        //         throw TypeError('类型错误，应为函数！')
+        //     }
+        //     const self = this;
+        //     return function (...newArgs) {
+        //         context = context ?? globalThis;
+        //         const key = Symbol('temp');
+        //         context[key] = self;
+        //         const res = context[key](...args, ...newArgs);
+        //         delete context[key];
+        //         return res;
+        //     }
+
+        // }
+            //2、封装异步的fetch，使用async await方式来使用
+            (async => {
+                class frtchUtil {
+                    async get(url) {
+                        const res = await fetch(url);
+                        const data = res.json();
+                        return data;
+                    }
+                    async post(url, params) {
+                        const res = await fetch(url, {
+                            method: 'POSY',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(params)
+                        });
+                        const data = res.json();
+                        return data;
+                    }
+                    async put(url, params) {
+                        const res = await fetch(url, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(params)
+                        });
+                        const data = res.json();
+                        return data;
+                    }
+                    async delete(url, params) {
+                        const res = await fetch(url, {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(params)
+                        });
+                        const data = res.json();
+                        return data;
+                    }
+                }
+            })
+        // 3、实现双向数据绑定
+        const input = document.getElementById('input')
+        const span = document.getElementById('span')
+        let obj = {};
+        Object.defineProperties(obj ,{
+            'text':{
+                get(){
+                    console.log('获取数据')
+                },
+                set(newVal){
+                    console.log('改变数据')
+                    input.value = newVal;
+                    span.innerHTML = newVal;
+                }
+            }
+        })
+        input.addEventListener('input' , function(e){
+            obj.text = e.target.value;
+        })
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寄生组合式继承</title>
+</head>
+<body>
+    <script>
+        // 寄生组合式继承方法结合了构造函数继承以及原型链继承
+        function parent(name){
+            this.name = name;
+            this.say = function(){
+                console.log('hi')
+            }
+        }
+        // 在原型上面添加
+        parent.prototype.play = () => {
+            console.log('我喜欢玩游戏');
+        }
+        function child(name , age){
+            // 构造函数继承
+            parent.call(this,name);
+            this.age = age;
+        }
+        // const P = new parent('jyx');
+        // const c = new child('hcy' , 20);
+        // console.log('测试构造函数继承：');
+        // console.log('child name',c.name);
+        // console.log('child age' , c.age);
+        // console.log(c.play());//10.31寄生组合式继承方法.html:31 Uncaught TypeError: c.play is not a function
+        // // 无法继承圆形脸上卖弄的
+        // 原型链继承
+        child.prototype = Object.create(parent.prototype);
+        child.prototype.constructor = child;
+        const P = new parent('jyx');
+        const c = new child('hcy' , 20);
+        console.log('测试构造函数继承：');
+        console.log('child name',c.name);
+        console.log('child age' , c.age);
+        console.log(c.play());
+        // 与组合式继承不同的是：组合式继承调用了两次父
+        child.prototype = new parent();//在设置子类原型时，调用了一次。这次调用会在 child.prototype 上创建 name  属性，
+        child.prototype.constructor = child;
+
+    </script>
+    
+</body>
+</html>

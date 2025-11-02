@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.5练习</title>
+</head>
+<body>
+    <script>
+        // 1、节流函数
+        // 首次是可以执行的，但是最后一次可能无法执行
+        function throttle(fn , delay){
+            let lastTime = 0;
+            return function(){
+                const context = this;
+                const args = arguments;
+                const nowTime = Date.now();
+                if(nowTime - lastTime > delay){
+                    fn.apply(context , arguments);
+                    lastTime = nowTime;
+                }
+            }
+
+        }
+        // 2、手写柯里化
+        function curry(fn){
+           return function curried(...args){
+            if(fn.length <= args.length){
+                // 立马执行
+                return fn(...args);
+            }else {
+                // 继续收集参数
+                return function(...nextArgs){
+                    return curried(...args , ...nextArgs)
+                }
+            }
+
+           }
+
+        }
+        // 3、浅拷贝
+        function copy(obj){
+            // 判断类型
+            if(typeof obj !=="object"){
+                throw new TypeError("类型错误");
+            }
+            const newObj = Array.isArray(obj) ? []:{};
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newObj[key] = obj[key];
+                }
+            }
+            return newObj;
+        }
+        const obj = {name :'jyx' , age : 19};
+        const newObj = copy(obj);
+        console.log(newObj);
+        const arr = [1,2,3];
+        const newArr = copy(arr);
+        console.log(newArr);
+    </script>
+    
+</body>
+</html>

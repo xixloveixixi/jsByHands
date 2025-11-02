@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写 new 操作符</title>
+</head>
+<body>
+    <script>
+        // 手写 new 操作符
+        let obj = new Object(value);
+        function myNew(val , constructor){
+            // 判断类型
+            if(typeof constructor !=="function"){
+                throw TypeError('类型错误！！！');
+            }
+            // 创建一个新的实例，给他prototype
+            let instance = Object.create(constructor.prototype);
+            // 调用构造函数
+            let res = constructor.apply(instance , val);
+            // 返回的时候要对res进行判断
+            return (res === null || typeof res ==="object") ? res : instance;
+        }
+    </script>
+    
+</body>
+</html>

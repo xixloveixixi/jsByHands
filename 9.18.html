@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.18练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、promise.race
+        class Promise {
+            // 1、定义常量
+            static PENDING = '待定'
+            static FULFILLED = '成功'
+            static REJECTED = '失败'
+            // 2、初始化
+            constructor(func) {
+                this.result = null;
+                this.resolveCallBacks = [];
+                this.rejectCallBacks = [];
+                this.status = Promise.PENDING;
+                try {
+                    // 执行函数
+                    func(this.resolve.bind(this), this.reject.bind(this));
+                } catch (error) {
+                    this.reject(error);
+                }
+            }
+            // 3、执行resolve
+            resolve(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.FULFILLED;
+                    this.result = result;
+                    queueMicrotask(() => {
+                        this.resolveCallBacks.forEach((fn) => {
+                            fn(result);
+                        })
+                    })
+                }
+            }
+            // 4、执行reject
+            reject(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.REJECTED;
+                    this.result = result;
+                    queueMicrotask(() => {
+                        this.rejectCallBacks.forEach((fn) => {
+                            fn(result);
+                        })
+                    })
+                }
+            }
+            // 5、then方法
+            then(onFulfilled, onRejected) {
+                onFulfilled = typeof onFulfilled === "function" ? onFulfilled : (val) => val;
+                onRejected = typeof onRejected === "function" ? onRejected : (error) => { throw error };
+                const self = this;
+                return new Promise((resolve, reject) => {
+                    const handleCallBacks = (callbacks, result) => {
+                        try {
+                            let res = callbacks(result);
+                            if (res instanceof Promise) {
+                                res.then(resolve, reject);
+                            } else {
+                                resolve(res);
+                            }
+                        } catch (error) {
+                            reject(error);
+                        }
+
+                    }
+                    switch (self.status) {
+                        case Promise.PENDING: {
+                            this.rejectCallBacks.push((val) => handleCallBacks(onRejected, this.result));
+                            this.resolveCallBacks.push((val) => handleCallBacks(onFulfilled, this.result));
+                            break;
+                        }
+                        case Promise.FULFILLED: {
+                            handleCallBacks(onFulfilled, this.result);
+                            break;
+                        }
+                        case Promise.REJECTED: {
+                            handleCallBacks(onRejected, this.result);
+                            break;
+                        }
+                    }
+                })
+            }
+            all(promises) {
+                return new Prmise((resolve, reject) => {
+                    let count = 0;
+                    let results = new Array(promises.length);
+                    for (let i = 0; i < promises.length; i++) {
+                        Promise.resolve(promises[i])
+                        .then(result => {
+                            results[i] = result;
+                            count ++; 
+                            if(count === promises.length){
+                                resolve(results);
+                            }
+                        })
+                        .catch(reject)
+                    }
+                })
+
+            }
+        race(promises) {
+                return new Promise((resolve, reject) => {
+                    for (let i = 0; i < promises.length; i++) {
+                       Promise.resolve(promises[i])
+                       .then(resolve)
+                       .catch(reject);
+                    }
+
+                })
+            }
+        }
+        // 2、灯亮
+        // 要进行延迟亮灯，异步执行加循环
+        function red() {
+            console.log('红色');
+        }
+        function yellow() {
+            console.log('黄色');
+        }
+        function green() {
+            console.log('绿色');
+        }
+        let task = (light, timer) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (light === 'red') {
+                        red();
+                    }
+                    else if (light === 'green') {
+                        green();
+                    } else if (light === 'yellow') {
+                        yellow();
+                    }
+                    resolve(); // 必须调用resolve才能触发后续.then
+                }, timer)
+            })
+
+        }
+        let step = () => {
+            task('red', 1000)
+                .then(() => task('green', 2000))
+                .then(() => task('yellow', 3000))
+                .then(step);
+        }
+        step();
+        article = 'The quick brown fox jumps over the lazy dog. The dog barks back at the fox, but the fox ignores it and jumps again'
+        // 3、查找文章中出现频率最高的单词
+        function findMostWord(article) {
+            // 空格分割->数组->遍历数组->map来负责计数和记单词->map次数最多的
+                let wordsArr = article.toLowerCase()
+        .replace(/[^\w\s]/g, '') // 移除非字母数字字符
+        .split(/\s+/); // 按空白字符分割
+            console.log(wordsArr);
+            // 进行遍历
+            let wordsMap = new Map();
+            wordsArr.forEach((word) => {
+                word = word;
+                if (wordsMap.has(word)) {
+                    let wrodCount = wordsMap.get(word) + 1;
+                    wordsMap.set(word, wrodCount);
+                } else {
+                    wordsMap.set(word, 1);
+                }
+            })
+            let maxWord = '';
+            let max = 0;
+            for (let [key, value] of wordsMap) {
+                if (value > max) {
+                    max = value;
+                    maxWord = key;
+                }
+            }
+            return maxWord;
+        }
+        let maxWord = findMostWord(article);
+        console.log(maxWord);
+//         正则表达式：
+//         1. /[^\w\s]/g
+// [ ] - 字符集，匹配方括号内的任意一个字符
+// ^ - 在字符集内部使用时表示"非"或"取反"
+// \w - 匹配任何单词字符（字母、数字、下划线）
+// \s - 匹配任何空白字符（空格、制表符、换行符等）
+// g - 全局标志，表示匹配所有符合条件的字符，而不仅仅是第一个
+// 所以 /[^\w\s]/g 的意思是：匹配所有既不是单词字符也不是空白字符的字符，也就是标点符号、特殊符号等。
+
+// 例如，对于字符串 "Hello, world! This is a test."，这个正则会匹配 ,、! 和 . 这些标点符号，然后 replace 方法会将它们替换为空字符串。
+
+// 2. /\s+/
+// \s - 匹配任何空白字符（空格、制表符、换行符等）
+// + - 量词，表示匹配前面的元素一次或多次
+// 所以 /\s+/ 的意思是：匹配一个或多个连续的空白字符。
+
+// 例如，对于字符串 "Hello   world"（中间有多个空格）或 "Hello\nworld"（中间有换行符），这个正则会匹配整个空白序列，然后 split 方法会在这个位置分割字符串。
+
+    </script>
+</body>
+
+</html>

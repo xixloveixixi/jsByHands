@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10.11手写apply</title>
+</head>
+<body>
+    <script>
+        // 手写apply
+        function fn() {};
+        // fn.apply()
+        Function.prototype.myApply = function(thisArg, argArray){
+            const context = thisArg ?? globalThis;
+            const key = Symbol('temp');
+            context[key] = this;
+            const res = context[key](...argArray);
+            delete context[key];
+            return res;
+
+        }
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.9练习</title>
+</head>
+<body>
+    <script>
+        // 1、createObject
+        let obj = {
+            name :'jyx',
+            age :21
+        }
+        function createObject(obj){
+            if(typeof obj !=="object" || obj === null){
+                throw new TypeError('类型错误');
+            }
+            function F(){};
+            F.prototype = obj;
+            return  new F();
+        }
+        // let newObj = Object.create(obj);
+        let newObj =createObject(obj);
+        console.log(newObj.__proto__);
+        // 2、// 转换前：
+source = [{
+            id: 1,
+            pid: 0,
+            name: 'body'
+          }, {
+            id: 2,
+            pid: 1,
+            name: 'title'
+          }, {
+            id: 3,
+            pid: 2,
+            name: 'div'
+          }]
+        //   pid是父节点的id，要通过id与pid的关系来判断是否在父节点当中
+          function changeTree(tree){
+            function mapTree(nodes , pid = 0){
+                return node.filter(ele => ele.pid === pid)
+                .map((ele) => ({
+                    ...ele,
+                    children:mapTree(nodes , ele.id)
+                }))
+            }
+            return mapTree(tree);
+          }
+          const newTree = changeTree(source);
+          console.log(newTree);
+// // 转换为: 
+// tree = [{
+//           id: 1,
+//           pid: 0,
+//           name: 'body',
+//           children: [{
+//             id: 2,
+//             pid: 1,
+//             name: 'title',
+//             children: [{
+//               id: 3,
+//               pid: 1,
+//               name: 'div'
+//             }]
+//           }
+//         }]
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.20练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、类型返回函数
+        function getType(val) {
+            if (typeof val !== "object" || val === null) {
+                return typeof val ;
+            }
+            // console.log(Object.prototype.toString(obj).slice(8,-1));
+            return Object.prototype.toString.call(val).slice(8, -1).toLowerCase();
+
+        }
+        console.log('测试')
+        console.log(getType(null));      // "null"
+        console.log(getType(42));        // "number"
+        console.log(getType("hello"));   // "string"
+        console.log(getType(true));      // "boolean"
+        console.log(getType(undefined)); // "undefined"
+        console.log(getType(() => { }));  // "function"
+        console.log(getType(Symbol()));  // "symbol"
+        console.log(getType([1, 2, 3])); // "array"
+        console.log(getType({}));        // "object"
+        console.log(getType(new Date())); // "date"
+        console.log(getType(/a/g));      // "regexp"
+
+
+        // 2、日期格式化函数
+         console.log(formatDate(new Date('2020-12-01'), 'yyyy/MM/dd'))
+         function formatDate(date , format){
+            const year = date.getFullYear() ;
+            const mouth = date.getMonth() + 1  < 10 ? '0' +( date.getMonth() + 1) : date.getMonth() + 1;
+            const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+            format = format.replace('yyyy' , year);
+            format = format.replace('MM' , mouth);
+            format = format.replace('dd' , day);
+            return format;
+         }
+        // 3、数组的push
+        let arr = [1,2,3,4,5];
+        Array.prototype.myPush = function(){
+            const arr = this;
+            for(let i = 0 ; i < arguments.length ; i++){
+                arr[arr.length] = arguments[i];
+            }
+            return arr.length;
+        }
+        arr.push(7);
+        console.log(arr);
+        // 4、数组的map
+        Array.prototype.myMap = function(fn){
+            const arr = this;
+            let res = [];
+            for(let i = 0 ; i < arr.length ; i++){
+                const item = fn(arr[i]);
+                res.push(item);
+            }
+            return res;
+        }
+        const mapArr = arr.myMap((val) => val % 2 );
+        console.log(mapArr);
+        // 5、实现字符串的repeat方法
+        let str = 'hi';
+        console.log(str.repeat(2))
+        console.log(str);
+        String.prototype.myRepeat = function(count){
+            let str = this;
+            let ans = '';
+            for(let i = 0 ; i < count ; i++){
+                ans += str;
+            }
+            return ans;
+
+        }
+        console.log(str.myRepeat(2));
+        console.log(str);
+    </script>
+
+</body>
+
+</html>

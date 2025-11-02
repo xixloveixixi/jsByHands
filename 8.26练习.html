@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.26练习</title>
+</head>
+<body>
+    <script>
+        let fn = () => {};
+        // fn.apply(thisArg: any, argArray?: any)
+        // 1、手写apply函数
+        // 缺点：
+        // “用完即毁”原则未遵守： 这是最关键的一点。你在context上添加了一个临时属性key，但在函数执行完毕后，没有将它删除。这会对传入的context对象造成“副作用”（side effect），污染了原对象。一个健重的apply实现应该在执行后删除这个临时属性。
+// 参数校验可以更严格： apply的第二个参数args应该是一个类数组对象（如数组或arguments）。
+// 虽然你的代码在...args时如果args不是可迭代的会自然报错，但可以更主动地进行判断并抛出更明确的错误，
+// 例如：if (args && (typeof args !== 'object' || args === null || !('length' in args))) { throw new TypeError('args must be an array-like object'); }。不过对于面试来说，当前处理通常可以接受。
+        Function.prototype.myApply = function(context , args){
+            if(typeof this !=="function"){
+                throw new TypeError('类型错误');
+            }
+            context = context ?? window;
+            const key = Symbol('temp');
+            context[key] = this;
+            let res;
+            if(args){
+                res = context[key](...args);
+            }else {
+                res = context[key]();
+            }
+            delete context[key];
+            return res;
+
+        }
+
+        // 2、手写bind函数
+        // fn.bind(thisArg: any, ...argArray: any[])
+        // 如果被new调用，其内部的this指向应该是新创建的实例，而不是你绑定的context。你的实现完全没有处理这种情况。
+              Function.prototype.myBind = function(context , args){
+            if(typeof this !=="function"){
+                throw new TypeError('类型错误');
+            }
+            const fn = this;
+            context = context ?? window;
+           const boundFn =  function(...nextArgs){
+                    // 关键：判断是否被 new 调用
+        // instanceof 可以检测一个对象是否是某个构造函数的实例
+        // 当 new boundFn() 时，this 是 boundFn 的一个实例，所以 this instanceof boun
+            const finalContext = this instanceof boundFn ? this : context;
+        // 参数顺序：绑定的参数在前，新传入的参数在后
+        return fn.apply(finalContext, [...args, ...nextArgs]);
+           }
+               // 关键：处理原型链
+    // 让 boundFn 的 prototype 指向 fn 的 prototype
+    // 这样 new boundFn() 出来的实例就能继承 fn.prototype 上的属性和方法
+    boundFn.prototype = Object.create(fn.prototype);
+    return boundFn;
+
+        }
+        // 3、手写柯里化
+        function curry(func){
+            if(typeof func !=="function"){
+                throw new TypeError('传入的类型错误');
+            }
+           return function curried(...args){
+            if(args.length >= func.length){
+                // 直接执行
+                return func.apply(this , args);
+            }else {
+                return function(...newArgs){
+                    return curried.apply(this , args.concat(newArgs));
+                }
+            }
+           }
+        }
+        let arr = [1,2,3,4,5];
+        let flatArr = [1,2,[3,4,[5,6]]]
+        let setArr = [1,2,1,3,2,4,2,1,3]
+        // 4、数组求和
+        function sum(arr){
+            const ans = arr.reduce((total,prev) => total += prev);
+            return ans;
+        }
+        console.log(sum(arr));
+        // 5、数组扁平化
+        function flat(arr){
+            let newArr = [];
+            for(let i = 0 ; i < arr.length ; i++){
+                if(Array.isArray(arr[i])){
+                    newArr =newArr.concat(flat(arr[i])); 
+                }else {
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+        }
+        console.log(flat(flatArr));
+        // 6、数组去重
+        console.log(Array.from(new Set(setArr)));
+        // 7、数组的flat
+        Array.prototype.myFlat = function(depth = 1){
+            let newArr = [];
+            function flatter(curArr , depth){
+                for(let i = 0 ; i < curArr.length ; i++){
+                if(Array.isArray(curArr[i]) && depth > 0){
+                   flatter(curArr[i] , depth - 1); 
+                }else {
+                    newArr.push(curArr[i]);
+                }
+            }
+            }
+            flatter(this , depth);
+            return newArr;
+        }
+        console.log(flatArr.myFlat(2));
+        // 8、数组的filter
+        Array.prototype.myFilter = function(fn){
+            let newArr = [];
+            for(let i = 0 ; i < this.length ; i++){
+                if(fn(this[i])){
+                    newArr.push(this[i]);
+                }
+            }
+            return newArr;
+        }
+        console.log(arr.myFilter((val) => val % 2 === 0))
+        // 9、数组的map
+                Array.prototype.myMap = function(fn){
+            let newArr = [];
+            for(let i = 0 ; i < this.length ; i++){
+                newArr.push(fn(this[i]));
+            }
+            return newArr;
+        }
+         console.log(arr.myMap((val) => val * 2))
+        // 10、字符串的repeat
+        let str = 'abc';
+        String.prototype.myRepeat = function(count){
+            const str = this;
+            let ans = '';
+            for(let i = 0 ; i < count ; i++){
+                ans += str;
+            }
+            return ans;
+        }
+        console.log(str.myRepeat(3));
+        // 11、字符串翻转
+                String.prototype.myReserve = function(count){
+            const str = this;
+            let ans = '';
+            for(let i = str.length - 1  ; i >= 0 ; i--){
+                ans += str[i];
+            }
+            return ans;
+        }
+        console.log(str.myReserve());
+    </script>
+    
+</body>
+</html>

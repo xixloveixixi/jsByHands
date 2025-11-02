@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写深拷贝</title>
+</head>
+<body>
+    <script>
+        function deepCopy(obj){
+            if(!obj || typeof obj !=="object"){
+                return obj;
+            }
+            let newObj = Array.isArray(obj) ? [] : {};
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newObj[key] = typeof obj[key] ==="object" ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newObj;
+
+        }
+        // 1. 测试基本对象
+const originalObj = {
+    a: 1,
+    b: 'hello',
+    c: true,
+    d: null,
+    e: undefined
+};
+const copiedObj = deepCopy(originalObj);
+console.log('--- 测试基本对象 ---');
+console.log('原始对象:', originalObj);
+console.log('拷贝对象:', copiedObj);
+console.log('是否为同一个对象:', originalObj === copiedObj); // 应该为 false
+console.log('');
+
+// 2. 测试嵌套对象
+const nestedObj = {
+    level1: {
+        level2: {
+            value: 'deep'
+        }
+    }
+};
+const copiedNestedObj = deepCopy(nestedObj);
+console.log('--- 测试嵌套对象 ---');
+console.log('原始嵌套对象:', nestedObj);
+console.log('拷贝嵌套对象:', copiedNestedObj);
+console.log('深层属性是否为同一个引用:', nestedObj.level1.level2 === copiedNestedObj.level1.level2); // 应该为 false
+console.log('');
+
+// 3. 测试数组
+const originalArray = [1, 'a', { b: 2 }, [3, 4]];
+const copiedArray = deepCopy(originalArray);
+console.log('--- 测试数组 ---');
+console.log('原始数组:', originalArray);
+console.log('拷贝数组:', copiedArray);
+console.log('是否为同一个数组:', originalArray === copiedArray); // 应该为 false
+console.log('数组中的对象是否为同一个引用:', originalArray[2] === copiedArray[2]); // 应该为 false
+console.log('');
+
+// 4. 测试循环引用
+const circularObj = { a: 1 };
+circularObj.self = circularObj;
+console.log('--- 测试循环引用 ---');
+try {
+    const copiedCircularObj = deepCopy(circularObj);
+    console.log('成功拷贝循环引用对象:', copiedCircularObj);
+} catch (e) {
+    console.error('拷贝循环引用时出错:', e);
+}
+console.log('');
+
+// 5. 测试其他类型
+const date = new Date();
+const regex = /test/g;
+const otherTypes = {
+    date: date,
+    regex: regex
+};
+const copiedOtherTypes = deepCopy(otherTypes);
+console.log('--- 测试其他类型 ---');
+console.log('原始对象:', otherTypes);
+console.log('拷贝对象:', copiedOtherTypes);
+console.log('Date 对象是否被正确拷贝:', copiedOtherTypes.date instanceof Date); // 应该为 false
+console.log('RegExp 对象是否被正确拷贝:', copiedOtherTypes.regex instanceof RegExp); // 应该为 false
+
+    </script>
+    
+</body>
+</html>

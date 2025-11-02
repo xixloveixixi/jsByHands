@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.11练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、手写bind函数
+        // bind函数返回的是一个新的函数,传入的也是thisArgs和参数
+        Function.prototype.myBind = function (context, ...args) {
+            if (typeof this !== "function") {
+                throw new TypeError("使用bind的必须为函数!")
+            }
+            const fn = this;
+            context = context ?? window;
+            return function (...nextArgs) {
+                return fn.apply(context, [...args, ...nextArgs]);
+            }
+        }
+        const person = {
+            name: 'Alice',
+            sayName: function () {
+                console.log(`My name is ${this.name}`);
+            }
+        };
+
+        // 使用 bind() 创建一个 this 被绑定到 person 的新函数
+        // const boundSayName = person.sayName.bind(person);
+        const boundSayName = person.sayName.myBind(person);
+
+        // 将这个新函数作为回调传递
+        setTimeout(boundSayName, 1000);
+
+        // 2、手写浅拷贝
+        function copy(obj) {
+            if (typeof obj !== "object" || obj === null) {
+                return obj;
+            }
+            let newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = obj[key];
+                }
+            }
+            return newObj;
+        }
+        console.log(copy(person));
+        // 3、交换a,b的值，不能用临时变量
+        function switchNum(a, b) {
+            a = a + b;
+            b = a - b;
+            a = a - b;
+            return [a, b];
+
+        }
+        console.log(switchNum(1, 2));
+        // 4、数组求和
+        function arrSum(arr) {
+            if (!Array.isArray(arr)) {
+                throw new TypeError("传入的类型应该为数组");
+            }
+            const res = arr.reduce((total, cur) => total += cur, 0)
+            return res;
+
+        }
+        console.log(arrSum([1, 2, 3]));
+        // 5、实现数组的扁平化
+        // 我感觉是递归吧
+        let arr = [1, [2, [3, 4, 5]]];
+        function flatter(arr) {
+            if (!Array.isArray(arr)) {
+                throw new TypeError("传入的类型应该为数组");
+            }
+            let len = arr.length;
+            console.log(len);
+            let newArr = [];//每一次递归都会新建一个
+            for(let i = 0 ; i < len ; i++){
+                if(!Array.isArray(arr[i])){
+                    newArr.push(arr[i]);
+                }else {
+                    newArr = newArr.concat(flatter(arr[i]));
+                }
+            }
+            return newArr;
+        }
+        console.log(flatter(arr));
+
+    </script>
+
+</body>
+
+</html>

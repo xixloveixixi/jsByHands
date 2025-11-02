@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 1、promise.then
+        class Promise {
+            // 1、定义常量
+            static PENDING = '待定'
+            static FULFILLED = '成功'
+            static REJECTED = '失败'
+            constructor(func) {
+                // 2、定义所需要的数据
+                this.result = null;
+                this.rejectedCallBacks = [];
+                this.resolveCallBacks = [];
+                this.status = Promise.PENDING;
+                try {
+                    // 不要加括号，加了会立刻执行
+                    func(this.resolve.bind(this), this.reject.bind(this));
+                } catch (error) {
+                    this.reject(error);
+                }
+            }
+            // 3、resolve
+            resolve(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.FULFILLED;
+                    this.result = result;
+                    queueMicrotask(() => {
+                        this.resolveCallBacks.forEach((fn) => {
+                            fn(result);
+                        })
+                    })
+                }
+            }
+            // 4、reject
+            reject(result) {
+                if (this.status === Promise.PENDING) {
+                    this.status = Promise.REJECTED;
+                    this.result = result;
+                    queueMicrotask(() => {
+                        this.rejectedCallBacks.forEach((fn) => {
+                            fn(result);
+                        })
+                    })
+                }
+            }
+            then(onFulfilled, onRejected) {
+                // 1、判断类型
+                typeof onFulfilled === "function" ? onFulfilled : (value) => value;
+                typeof onRejected === "function" ? onRejected : (value) => { throw value };
+                // 2、保留当前的对象，后面进行状态的判断
+                const self = this;
+                return new Promise((resolve, reject) => {
+                    // 3、定义处理回调函数
+                    let handelCallBacks = (callback, result) => {
+                        try {
+                            const res = callback(result);
+                            if (res instanceof Promise) {
+                                res.then(resolve, reject);  // 正确链式调用
+                            } else {
+                                resolve(res);
+                            }
+                        } catch (error) {
+                            reject(error);  // 捕获回调中的同步错误
+                        }
+                    }
+                    //    4、判断状态做出对应的举措
+                    switch (self.status) {
+                        case Promise.PENDING: {
+                            this.resolveCallBacks.push((value) => handelCallBacks(onFulfilled, self.result));
+                            this.rejectedCallBacks.push((value) => handelCallBacks(onRejected, self.result));
+                            break;
+                        }
+                        case Promise.FULFILLED: {
+                            queueMicrotask(() => {
+                                handelCallBacks(onFulfilled, self.result)
+                            })
+                            break;
+                        }
+                        case Promise.REJECTED: {
+                            queueMicrotask(() => {
+                                handelCallBacks(onRejected, self.result)
+                            })
+                            break;
+                        }
+                    }
+                })
+            }
+        }
+        // 2、new
+        function myNew(constructor, ...args) {
+            if (typeof constructor !== "function") {
+                throw TypeError('类型错误！');
+            }
+            let newObj = Object.create(constructor.prototype);
+            let res = constructor.apply(newObj, args);
+            return typeof res === "object" ? res : newObj;
+        }
+        // 3、解析url
+        let url = 'http://www.domain.com/?user=anonymous&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
+        console.log(parseParam(url));
+        function parseParam(val) {
+            let param = val.split('?')[1];
+            let paramPair = param.split('&');
+            let paramMap = new Map();
+            // console.log(paramPair);
+            paramPair.forEach((ele) => {
+                if (/=/.test(ele)) {
+                    // console.log(ele);
+                    // 有等于的参数
+                    const [key, val] = ele.split('=');
+                    console.log(key);
+                    const decodeKey = decodeURIComponent(key);
+                    const decodeVal = decodeURIComponent(val);
+                    if (paramMap.has(decodeKey)) {
+                        // 判断是否为数组
+                        let exVal = paramMap.get(decodeKey);
+                        if (Array.isArray(exVal)) {
+                            exVal.push(decodeVal);
+                        } else {
+                            paramMap.set(decodeKey, [decodeVal, exVal]);
+                        }
+                    } else {
+                        paramMap.set(decodeKey, decodeVal);
+                    }
+                } else {
+                    // 没有等号的存在，设置true or false
+                    const decodeKey = decodeURIComponent(ele);
+                    paramMap.set(decodeKey, true);
+                }
+
+            })
+            let ans = {};
+            for (let [key, val] of paramMap) {
+                ans[key] = val;
+            }
+            return ans;
+
+        }
+        // 4、实现每隔一秒打印 1, 2, 3, 4
+        function print1s() {
+            setTimeout(() => {
+                console.log(1);
+                setTimeout(() => {
+                    console.log(2);
+                    setTimeout(() => {
+                        console.log(3);
+                        setTimeout(() => {
+                            console.log(4);
+                        }, 1000)
+                    }, 1000)
+                }, 1000)
+            }, 1000)
+        }
+        // print1s();
+        // 5、有30个小孩儿，编号从1-30，围成一圈依此报数，1、2、3 数到 3 的小孩儿退出这个圈， 然后下一个小孩 重新报数 1、2、3，问最后剩下的那个小孩儿的编号是多少?
+        function childrenCount() {
+            // 1、先创建数组
+            let childenMap = new Map();
+            for (let i = 0; i < 30; i++) {
+                childenMap.set(i + 1, i + 1);
+            }
+            // 遍历map     
+            // 2、开始数数
+            for (let [key, val] of childenMap) {
+                if (key % 3 === 0) {
+                    childenMap.set(key, 0);
+                }
+            }
+            // 3、返回
+            let ansArr = [];
+            for (let [key, val] of childenMap) {
+                if (val !== 0) {
+                    ansArr.push(key);
+                }
+            }
+            return ansArr;
+        }
+        let arr = childrenCount();//您的代码只是简单筛选出不能被3整除的编号（如保留1,2,4,5...），但实际约瑟夫环问题需要动态模拟报数
+        console.log(arr);
+        function josephus() {
+            const children = Array.from({ length: 30 }, (_, i) => i + 1);
+            let index = 0;
+
+            while (children.length > 1) {
+                // 找到下一个需要退出的位置（报数3）
+                index = (index + 2) % children.length;
+                console.log('index' , index);
+
+                // 移除退出的小孩
+                children.splice(index, 1);
+                console.log(children);
+
+                // 保持当前索引位置（下一个报数从退出者的下一位开始）
+                // 因为splice已移除元素，index自动指向下一位
+            }
+
+            return children[0];
+        }
+        console.log(josephus())
+    </script>
+
+</body>
+
+</html>

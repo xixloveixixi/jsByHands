@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.13练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、promise      
+        // class Promise {
+        //     // 定义全局的变量
+        //     static PEDNING = '待定'
+        //     static FULFILLED = '成功'
+        //     static REJECTED = '失败'
+        //     // 初始化：resuolt/回调函数数组/状态/执行reslve和reject
+        //     constructor(func) {
+        //         this.result = null;
+        //         this.resolveCallBacks = [];
+        //         this.rejectCallBacks = [];
+        //         this.status = Promise.PEDNING;
+        //         // 执行
+        //         try {
+        //             func(this.resolve.bind(this), this.reject.bind(this))
+        //         } catch (error) {
+        //             this.reject(error);
+        //         }
+        //     }
+        //     // 判断状态->更改状态/结果/执行回调函数
+        //     resolve(res) {
+        //         if (this.status === Promise.PEDNING) {
+        //             this.status = Promise.FULFILLED;
+        //             this.result = res;
+        //             //    回调是异步的
+        //             queueMicrotask(() => {
+        //                 this.resolveCallBacks.forEach((fn) => {
+        //                     fn(this.result);
+        //                 });
+        //             })
+        //         }
+        //     }
+        //     reject(res) {
+        //         if (this.status === Promise.PEDNING) {
+        //             this.status = Promise.REJECTED;
+        //             this.result = res;
+        //             queueMicrotask(() => {
+        //                 this.rejectCallBacks.forEach((fn) => {
+        //                     fn(this.result);
+        //                 });
+        //             })
+        //         }
+        //     }
+        // }
+        // 2、数组的filter
+        let arr = [1, 2, 3, 4, 5];
+        Array.prototype.myFilter = function (fn) {
+            let filterArr = [];
+            arr.forEach((ele) => {
+                if (fn(ele)) {
+                    filterArr.push(ele);
+                }
+            })
+            return filterArr;
+        }
+        console.log(arr.myFilter((ele) => ele % 2 === 0))
+        // 3、类数组转化为数组
+        // Array.isArray
+        // 4、es5和es6求函数参数的和
+        // es5
+        function sumES5() {
+            let sum = 0;
+            for (let i = 0; i < arguments.length; i++) {
+                sum + arguments[i];
+            }
+            return sum;
+        }
+        function sumES6(...rest) {
+            return rest.reduce((total, prev) => total + prev, 0);
+        }
+        console.log(sumES5(1, 2, 3, 4)); // 应该输出: 10
+        console.log(sumES5(10, 20));     // 应该输出: 30
+        console.log(sumES5(-1, -2, -3)); // 应该输出: -6
+        console.log(sumES5());           // 应该输出: 0
+        console.log(sumES6(1, 2, 3, 4));       // 应该输出: 10
+        console.log(sumES6(10, 20));           // 应该输出: 30
+        console.log(sumES6(-1, -2, -3));       // 应该输出: -6
+        console.log(sumES6());                 // 应该输出: 0
+        // 5、instanceOf
+        function myInstanceOf(val, comVal) {
+            if (typeof val !== "object" || val === null) {
+                throw TypeError('类型错误');
+            }
+            let curPrototype = val.__proto__;
+            while (curPrototype !== null) {
+                if (comVal.prototype = curPrototype) {
+                    return true;
+                }
+                curPrototype = curPrototype.__proto__;
+            }
+            return false;
+        }
+        let obj = {
+            name: 'jyx',
+            age: 19
+        }
+        console.log(myInstanceOf(obj, Object));
+        // 6、灯亮
+        function red() {
+            console.log('红色');
+        }
+        function yellow() {
+            console.log('黄色');
+        }
+        function green() {
+            console.log('绿色');
+        }
+        // 使用promise方法
+        const task = (light, timer) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (light === 'red') {
+                        red();
+                    } else if (light === 'yellow') {
+                        yellow();
+                    } else if (light === 'green') {
+                        green();
+                    }
+                    resolve()
+                } ,timer)
+            })
+        }
+        let step = () => {
+            task('red', 3000)
+                .then(() => task('yellow', 2000))
+                .then(() => task('green', 1000))
+                .then(step)
+        }
+
+        // step();
+        // 7、实现每隔一秒打印 1,2,3,4
+        function print1s(){
+            setTimeout(() => {
+                console.log('1');
+                setTimeout(() => {
+                    console.log('2');
+                    setTimeout(() => {
+                        console.log('3');
+                        setTimeout(() => {
+                            console.log('4')
+                        } , 1000)
+                    } , 1000)
+                } , 1000)
+            } , 1000)
+        }
+        print1s();
+
+    </script>
+
+</body>
+
+</html>

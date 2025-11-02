@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.21练习</title>
+</head>
+<body>
+    <script>
+        // 1、手写call函数
+        const fn = () => {};
+        fn.call()
+        Function.prototype.myCall = function(context , ...argArray){
+            if(typeof this !=="function"){
+                throw new TypeError('类型错误');
+            }
+            context = context ?? window;
+            const args = argArray;
+            const key = Symbol('temp');
+            context[key] = this;
+            const res = context[key](args);
+            return res;
+        }
+         function Father() {
+            this.name = 'father';
+            this.age = 18;
+            this.sayHi = function () {
+                console.log(`hi,我是${this.name},今年${this.age}`);
+            };
+        }
+
+        const f = new Father();
+        f.sayHi(); // 输出：hi,我是father,今年18
+        const son = {
+            name: 'son',
+            age: 18
+        }
+        f.sayHi.myCall(son)
+        // 2、字符串的repeat
+        String.prototype.myRepeat = function(count){
+            const str = this;
+            let res = '';
+            for(let i = 0 ; i < count ; i++){
+                res += str;
+            }
+            return res;
+        }
+        let str = 'abc'
+        console.log(str.myRepeat(3));
+        // 3、实现字符串翻转
+        String.prototype.myReserve = function(){
+            let str = this;
+            let res = '';
+            for(let i = str.length - 1 ; i >= 0 ; i--){
+                res += str[i];
+            }
+            return res;
+        }
+        console.log(str.myReserve());
+
+    </script>
+    
+</body>
+</html>

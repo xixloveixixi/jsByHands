@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.8练习</title>
+</head>
+
+<body>
+    <script>
+        //1、手写浅拷贝
+        let obj = {
+            name: 'jyx',
+            age: 19,
+            like: {
+                animals: 'panda',
+                sports: 'run'
+            }
+        }
+        function copy(obj) {
+            if (typeof obj !== "object" || obj === null) {
+                return obj;
+            }
+            let newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                if (obj.hasOwnProperty(obj[key])) {
+                    newObj[key] = obj[key];
+                }
+            }
+            return newObj;
+        }
+        // let copyObj = copy(obj);
+        // console.log("修改内容");
+        // copyObj.like.sports = 'run';
+        // console.log(copyObj);
+        // console.log(obj);
+        // 2、手写深拷贝
+        function deepCopy(obj) {
+            if (typeof obj !== "object" || obj === null) {
+                return obj;
+            }
+            let newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                // !注意啦这里是key
+                if (obj.hasOwnProperty(key)) {
+                    // console.log('obj[key]' , obj[key])
+                    newObj[key] = typeof obj[key] === "object" ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newObj;
+        }
+        let copyObj = deepCopy(obj);
+        // console.log("修改内容");
+        copyObj.like.sports = 'swim';
+        console.log(copyObj);
+        console.log(obj);
+        // 3、日期格式化函数
+        console.log(formatDate(new Date('2020-12-01'), 'yyyy/MM/dd'))
+        function formatDate(date, format) {
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+            let day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+            format = format.replace('yyyy', year);
+            format = format.replace('MM', month);
+            format = format.replace('dd', day);
+            return format;
+        }
+        // 4、交换a,b的值，不能用临时变量
+        function changeVal(a, b) {
+            a = a + b;
+            b = a - b;
+            a = a - b;
+            return [a, b];
+        }
+        console.log(changeVal(1, 2));
+        console.log(changeVal(3, 2));
+        // 5、数组乱序化
+        let arr = [1, 2, 3, 4, 5];
+        function luanxu(arr) {
+            if (!Array.isArray(arr)) {
+                throw TypeError('类型错误')
+            }
+            // 交换
+            let len = arr.length;
+            for (let i = 0; i < len--; i++) {
+                let random = Math.floor(Math.random() * len);
+                let tem = arr[i];
+                arr[i] = arr[random];
+                arr[random] = tem;
+            }
+            return arr;
+        }
+        console.log(luanxu(arr));
+        // 6、数组求和
+        console.log(arr.reduce((total, prev) => total + prev, 0))
+        // 7、数组扁平化
+        let flatArr = [1, 2, 3, [4, 5, [6, 7]]];
+        function flat(arr) {
+            if (!Array.isArray(arr)) {
+                throw TypeError('类型错误')
+            }
+            let newArr = [];
+            for (let i = 0; i < arr.length; i++) {
+                if (arr[i].length > 1) {
+                    newArr = newArr.concat(flat(arr[i]));
+                } else {
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+
+        }
+        console.log(flat(flatArr));
+        // 8、数组去重
+        repeatArr = [1, 2, 1, 4, 3, 4, 5, 4, 3, 2];
+        console.log(Array.from(new Set(repeatArr)));
+        // 9、字符串的repeat
+        String.prototype.myRepeat = function (count = 1) {
+            let str = this;
+            let newStr = '';
+            for (let i = 0; i < count; i++) {
+                newStr += str;
+            }
+            return newStr;
+        }
+        let str = 'abc';
+        console.log(str.myRepeat(2));
+        // 10、字符串翻转
+        String.prototype.myReserve = function () {
+            let str = this;
+            let newStr = [];
+            for (let i = str.length - 1; i >= 0; i--) {
+                newStr.push(str[i]);
+            }
+            return newStr.join('');
+        }
+        console.log(str.myReserve());
+        // 11、将数字每千分位用逗号隔开
+        function formatWithReverse(num) {
+            let [bigNum, smallNum] = String(num).split('.');
+            // console.log(smallNum);
+            let bigNumArrReserve = Array.from(bigNum).reverse();
+            let newBigNum = [];
+            for (let i = 0; i < bigNumArrReserve.length; i++) {
+                if (i > 0 && i % 3 === 0) {
+                    newBigNum.push(',');
+                }
+                newBigNum.push(bigNumArrReserve[i]);
+
+            }
+            bigNum = newBigNum.reverse().join('');
+            return smallNum ? bigNum + '.' + smallNum : bigNum;
+
+
+        }
+        console.log(formatWithReverse(12323.33)); // 输出: "12,323.33"
+        console.log(formatWithReverse(1232323));  // 输出: "1,232,323"
+        // 12、实现非负大整数相加
+        function sumBigNumber(a, b) {
+            a = a.split('');
+            b = b.split('');
+            let temp = 0;
+            let ans = '';
+            while (a.length || b.length || temp) {
+                temp += ~~a.pop() + ~~b.pop();
+                ans = (temp % 10) + ans;
+                temp = temp > 9 ? 1 : 0;
+            }
+            return ans.replace(/^0+$/, '0') ?? '0';
+
+        }
+        console.log(sumBigNumber("123", "456"));      // 579
+        console.log(sumBigNumber("999", "1"));        // 1000
+        console.log(sumBigNumber("0", "0"));          // 0
+        console.log(sumBigNumber("000", "000"));      // 0
+        console.log(sumBigNumber("10000000000000000000", "1")); // 10000000000000000001
+        console.log(sumBigNumber("99999999999999999999", "1")); // 100000000000000000000
+        // 13、解决add(1)(2)(3)
+        function sum(...args) {
+            return args.reduce((total, prev) => total + prev, 0)
+        }
+
+        function currying(fn) {
+            let allArgs = [];
+            return function curried(...args) {
+                if (args.length > 0) {
+                    allArgs = [...allArgs, ...args];
+                    return curried;//返回 curried 函数本身而不是调用 curried()
+                } else {
+                    return fn.apply(this, allArgs);
+                }
+
+            }
+
+        }
+        const add = currying(sum);
+        const result = add(1)(2)(3)();
+        console.log(result); // 输出: 6
+        // 14、类数组转化为数组
+        // Array.from()
+        // 15、reduce计算
+        console.log(-3/0)
+
+    </script>
+
+</body>
+
+</html>

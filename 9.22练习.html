@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.22练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、防抖函数
+        function debounce(fn, time) {
+            let timer = null;
+            return function (...params) {
+                let args = params;
+                let context = this;
+                if (timer) {
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(() => {
+                    fn.apply(context, args);
+                }, time);
+            }
+        }
+        // 2、节流函数:规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行
+        function throttle(fn, delay) {
+            let lastTime = 0;
+            return function (...params) {
+                let args = params;
+                let context = this;
+                let nowTime = new Date();
+                if (nowTime - lastTime <= delay) {
+                    fn.apply(context, params);
+                    lastTime = nowTime;
+                }
+            }
+        }
+        // 3、类型返回函数
+        function getType(val) {
+            if (typeof val !== "object" || val === null) {
+                return val;
+            }
+            // console.log(Object.prototype.toString.call(val).slice(8 , -1))
+            return Object.prototype.toString.call(val).slice(8, -1);
+
+        }
+        getType({
+            name: 'jyx',
+            age: 18
+        })
+        const fn = () => { };
+        // 4、手写call函数
+        Function.prototype.myCall = function (context, ...args) {
+            // fn.call(thisArg: any, ...argArray: any[])
+            if (typeof this !== "function") {
+                throw new TypeError('类型错误');
+            }
+            // 把这个函数记录下来
+            let key = Symbol('temp');
+            context[key] = this;
+            let res = context[key](args);
+            return res;
+        }
+        // 5.createObject
+        function createObject(obj){
+            function F(){};
+            F.prototype = obj ;
+            return new F();
+        }
+        let newObj = createObject({
+            name : 'jyx',
+            age : 18
+        })
+        console.log(newObj);
+        // 6.js转换为树结构
+        source = [{
+            id: 1,
+            pid: 0,
+            name: 'body'
+          }, {
+            id: 2,
+            pid: 1,
+            name: 'title'
+          }, {
+            id: 3,
+            pid: 2,
+            name: 'div'
+          }]
+        function changeTree(source){
+            function mapTree(nodes , pid){
+                return nodes.filter((node) => node.pid === pid)
+                .map((ele) => ({
+                    ...ele,
+                    children : mapTree(nodes , ele.id)
+                }))
+
+            }
+            return mapTree(source , 0)
+
+        }
+        console.log(changeTree(source));
+        // 7.文章中频率最高的
+         article = 'The quick brown fox jumps over the lazy dog. The dog barks back at the fox, but the fox ignores it and jumps again'
+           function findMostWord(article) {
+           let wordsArr = article.toLowerCase().replace(/[^\w\s]/ , '').split(' ');
+        //    console.log(wordsArr)
+        let wordsMap = new Map();
+        wordsArr
+           }
+        findMostWord(article);
+        
+
+
+    </script>
+
+</body>
+
+</html>

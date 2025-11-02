@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsonp</title>
+</head>
+<body>
+    <script>
+        // jsonp主要是解决web页面当中无法加载跨域数据的问题
+        // 我们发现web是可以加载跨域的js数据的，而且含有src的标签也支持跨域
+        function addScript(src){
+            // 1、新建标签
+            const script = document.createElement('script');
+            // 2、设置src
+            script.src = src;
+            // 3、设置type
+            script.type = 'test/javascript';
+            // 4、添加到页面当中
+            document.body.appendChild(script);
+        }
+    </script>
+    
+</body>
+</html>

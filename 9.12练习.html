@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.12练习</title>
+</head>
+
+<body>
+    <div class="light" style="width: 100px; height: 100px;">
+
+    </div>
+    <script>
+        // createObject
+        function createObject(val){
+            if(typeof val !=="object" || val === null){
+                return val;
+            }
+            function F(){};
+            F.prototype = val;
+            return new F();
+        }
+        let obj = Object.create({
+            age : 10 ,
+            name : 'jyx'
+        })
+        console.log(obj);
+        console.log(createObject({
+            age : 10 ,
+            name : 'jyx'
+        }))
+        // js转换为树结构
+              source = [{
+            id: 1,
+            pid: 0,
+            name: 'body'
+        }, {
+            id: 2,
+            pid: 1,
+            name: 'title'
+        }, {
+            id: 3,
+            pid: 2,
+            name: 'div'
+        }]
+        function changeTree(val){
+            function mapTree(nodes , pid){
+                return nodes.filter((ele) => ele.pid === pid )
+                .map((ele) => ({
+                    ...ele,
+                    children : mapTree(nodes , ele.id)
+                }))
+            }
+              return mapTree(val , 0);
+        }
+        const newTree = changeTree(source);
+        console.log(newTree);
+        // new
+        // let newObj = new Object({
+
+        // })
+        function myNew(constructor , ...args){
+            if(typeof obj !=="object" || obj === null){
+                throw TypeError('类型错误')
+            }
+            let newObj = Object.create(constructor.prototype);
+            let res = constructor.apply(obj , args);
+            return typeof res ==="object" ? res : newObj;
+        }
+        console.log(myNew(Object , {
+            name : 'jyx',
+            age : 10
+        }))
+        // 解析url
+          let url = 'http://www.domain.com/?user=anonymous&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
+       console.log( parseParam(url));
+       function parseParam(url){
+        let param = url.split('?')[1];
+        let pairParam = param.split('&');
+        console.log(pairParam);
+        let pairMap = new Map();
+        pairParam.forEach(element => {
+             if (/=/.test(element)) {
+            let [key , val] = element.split('=');
+            let decodeKey = decodeURIComponent(key);
+            let decodeVal = decodeURIComponent(val);
+            if(pairMap.has(decodeKey)){
+                  // 判断是否有数组
+                let exParam = pairMap.get(decodeKey);
+              if(Array.isArray(exParam)){
+                    exParam.push(element[decodeKey]);
+                }else {
+                    pairMap.set(decodeKey , [decodeVal , exParam]);
+                }
+            }else {
+                pairMap.set(decodeKey , decodeVal);
+            }
+        }else { 
+            let key = element.split('=');
+            let decodeKey = decodeURIComponent(key);
+            pairMap.set(decodeKey  , true);
+        }
+        });
+        let ans = {};
+       for(let [key , val] of pairMap){
+        ans[key] = val;
+       }
+       return ans;
+       }
+//        1. 循环打印红黄绿
+// 下面来看一道比较典型的问题，通过这个问题来对比几种异步编程方法：
+// 红灯 3s 亮一次，绿灯 1s 亮一次，黄灯 2s 亮一次；如何让三个灯不断交替重复亮灯？
+function printColor(){
+    while(1){
+        setTimeout(() => {
+            green();
+        },1000);
+         setTimeout(() => {
+            yellow();
+        },2000);
+         setTimeout(() => {
+            red();
+        },3000);
+    }
+}
+// printColor()
+// 陷入了死循环
+// 1、callback(回调)
+// const task = (timer , light , callback) => {
+//     setTimeout(() => {
+//         if(light === 'red'){
+//             red();
+//         }else  if(light === 'yellow'){
+//             yellow();
+//         }else  if(light === 'green'){
+//             green();
+//         }
+//     }, timer)
+
+// }
+// tast(3000 , 'red' , tast(2000 , 'yellow' , tast(1000 , 'green')))
+// 但是只能够执行一次，而不是交替执行
+// 递归方法：
+// const step = () => {
+//     task(3000, 'red', () => {
+//         task(2000, 'green', () => {
+//             task(1000, 'yellow', step)
+//         })
+//     })
+// }
+// step()//只有red
+// promise:
+function red() {
+    console.log('red');
+}
+function green() {
+    console.log('green');
+}
+function yellow() {
+    console.log('yellow');
+}
+
+const task = (timer, light) => {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            try {
+                if (light === 'red') red();
+                else if (light === 'yellow') yellow();
+                else if (light === 'green') green();
+                else reject(new Error('Invalid light color'));
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        }, timer);
+    });
+};
+
+// const step = () => {
+//     task(3000, 'red')
+//         .then(() => task(2000, 'yellow'))
+//         .then(() => task(1000, 'green'))
+//         .then(step)
+//         .catch(error => console.error('Error:', error));
+// }
+
+// // 启动
+// await和async
+
+const step = async() => {
+   await(task(3000 , 'red'));
+   await(task(2000 , 'yellow'));
+   await(task(1000 , 'green'));
+   step();
+}
+step();
+
+
+    </script>
+
+</body>
+
+</html>

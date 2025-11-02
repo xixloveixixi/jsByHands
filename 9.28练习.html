@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.28练习</title>
+</head>
+<body>
+    <script>
+        // 手写ajax
+        function myAjax(){
+            // 1、定义资源的位置
+            const SERVE_URL = './server';
+            // 2、创建一个xmlhttp对象
+            const xhr = new XMLHttpRequest();
+            // 3、设置一些参数
+            xhr.setRequestHeader('Accept' , 'application/json');
+            xhr.responseType ="json";
+            // 4、监听
+            xhr.onreadystatechange = () => {
+                if(xhr.readyState !== 4) return ;
+                if(xhr.status === 200){
+                    console.log(xhr.statusText);
+                }else {
+                    new Error(xhr.statusText);
+                }
+            }
+            xhr.open('GET' , SERVE_URL , true);
+            xhr.send(null);
+        }
+    </script>
+    
+</body>
+</html>

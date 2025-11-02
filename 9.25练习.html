@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.25练习</title>
+</head>
+
+<body>
+    <input id="input" type="text" >
+    <span id="span"></span>
+    <script>
+        // 1、解决add(1)(2)(3)
+        // 使用的是柯里化
+        // 柯里化的几个要点：
+        // 收集参数：每次调用时收集参数，直到没有新参数传入时执行原函数。
+        // 使用闭包
+        // 如果有新参数的话，收集新参数，返回curried
+
+        function sum(...args) {
+            return args.reduce((prev, total) => prev + total)
+        }
+        function currying(fn) {
+            let allArgs = [];
+            const curried = function (...newArgs) {
+                if (newArgs.length === 0) {
+                    // 停止收集返回执行
+                    return fn.apply(this, allArgs);
+                } else {
+                    allArgs = [...allArgs, ...newArgs];
+                    return curried;
+                }
+
+            }
+            return curried;
+        }
+        const add = currying(sum);
+        console.log(add(1)(2)(3)());
+        // 2、灯亮
+        // 异步加.then
+        function red() {
+            console.log('红色');
+        }
+        function yellow() {
+            console.log('黄色');
+        }
+        function green() {
+            console.log('绿色');
+        }
+        const task = function (light, timer) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (light === 'red') {
+                        red();
+                    }
+                    if (light === 'yellow') {
+                        yellow();
+                    }
+                    if (light === 'green') {
+                        green();
+                    }
+                    // resolve();
+                }, timer)
+            })
+        }
+        const step = function () {
+            task('red', 1000)
+                .then(() => task('yellow', 2000))
+                .then(() => task('green', 3000))
+                .then(() => step())
+        }
+        // step();
+        // 3、防抖函数+节流函数
+        // 防抖函数
+        function debounce(fn, time) {
+            let timer = null;
+            return function () {
+                const context = this;
+                const args = arguments;
+                if (timer) {
+                    clearTimeout(timer);
+                } else {
+                   setTimeout(() => {
+                        fn.apply(context, args);
+                    }, time)
+                }
+            }
+
+        }
+        // 节流函数
+        function throttle(fn, delay) {
+            let lastDate = 0;
+            return function () {
+                let nowDate = Date.now();
+                const context = this;
+                const args = arguments;
+                if (nowDate - lastDate >= delay) {
+                    lastDate = nowDate;
+                     fn.apply(context, args);
+                }
+            }
+
+        }
+        // 4、实现prototype继承
+        function parentFn(flag1){
+            this.flag1 = flag1;
+        }
+        function childFn(flag2) {
+            this.flag2 = flag2;
+        }
+        let p = new parentFn(false);
+        childFn.prototype = p;
+        let c = new childFn(true);
+        console.log(c.flag1);
+        console.log(c.flag2);
+        // 5、实现双向数据绑定
+        // vue3使用的是defineProperty：在里面设置get和set
+        const input = document.getElementById('input')
+        const span = document.getElementById('span')
+        let obj = {};
+        Object.defineProperties(obj , {
+            'text' : {
+            get(){
+                console.log('获取数据');
+            },
+            set(newVal){
+                console.log('数据正在更新');
+                input.value = newVal;
+                span.innerHTML = newVal;
+            }
+        }
+        })
+        input.addEventListener('keyup' , function(e){
+            obj.text = e.target.value;
+        })
+
+
+    </script>
+
+</body>
+
+</html>

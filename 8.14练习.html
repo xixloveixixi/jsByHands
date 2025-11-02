@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.14练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、promise
+        class Promise {
+            static PENDING = '待定'
+            static FULFILLED = '成功'
+            static REJECTED = '失败'
+            constructor(fn) {
+                this.status = PENDING;
+                this.result = null;
+                this.resolveCallBacks = [];
+                this.rejectCallBacks = [];
+                try {
+                    this.resolve.bind(this);
+                } catch (err) {
+                    this.reject.bind(this);
+                }
+            }
+            resolve(res) {
+                if (this.status === PENDING) {
+                    this.status = FULFILLED;
+                    this.result = res;
+                    queueMicrotask(() => {
+                        this.resolve.forEach(fn => fn(res));
+                    })
+                }
+            }
+            reject(res) {
+                if (this.status === PENDING) {
+                    this.status = REJECTED;
+                    this.result = res;
+                    queueMicrotask(() => {
+                        this.rejectCallBacks.forEach(fn => fn(res));
+                    })
+                }
+            }
+            then(onFulfilled, onRejected) {
+                onFulfilled = typeof onFulfilled === "function" ? onFulfilled : val => val;
+                onRejected = typeof onRejected === "function" ? onRejected : reason => { throw reason };
+                const self = this;
+                return new Promise((resolve, reject) => {
+                    const handelBacks = (backs, result) => {
+                        queueMicrotask(() => {
+                            try {
+                                const res = backs(result);
+                                res instanceof Promise ? res.then(resolve, reject) : resolve(res);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        })
+                    }
+                    switch (self.status) {
+                        case Promise.PENDING: {
+                            self.resolveCallBacks.push(() => handelBacks(onFulfilled, self.result));
+                            self.rejectCallBacks.push(() => handelBacks(onRejected, self.result));
+                            break;
+                        }
+                        case Promise.FULFILLED: {
+                            handelBacks(onFulfilled, self.result);
+                            break;
+                        }
+                        case Promise.REJECTED: {
+                            handelBacks(onRejected, self.result);
+                            break;
+                        }
+
+                    }
+
+
+
+
+                })
+            }
+            all(promises) {
+                let len = promises.length;
+                let count = 0;
+                let resArr = Array(len);
+                return Promise((resolve, reject) => {
+                    if (len === 0) {
+                        resolve(resArr);
+                        return;
+                    }
+
+                })
+                for (let i = 0; i < len; i++) {
+                    Promise.resolve(
+                        promises[i]
+                            .then(val => {
+                                count++;
+                                resArr[i] = val;
+                                if (len === count) {
+                                    resolve(resArr);
+                                }
+                            }
+                            )
+                    )
+                        .catch(err);
+                }
+
+            }
+            race(promises){
+                return new Promise((resolve , reject) => {
+                    for(let i = 0 ; i < promises.length ; i++){
+                        promises[i].then(resolve , reject);
+                    }
+
+                })
+
+            }
+
+        }
+        // 2、手写promise封装ajax
+        function promiseAjax() {
+            return new Promise((resolve, reject) => {
+                const SERVER_URL = '/server';
+                const xhr = new XMLHttpRequest();
+                xhr.setRequestHeader("Acception", "/application");
+                xhr.responseType = "json";
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState !== 4) {
+                        return;
+                    }
+                    if (xhr.status === 200) {
+                        resolve(xhr.response);
+                    } else {
+                        reject(xhr.statusText);
+                    }
+                }
+                xhr.onerror = (err) => reject(err);
+                xhr.ontimeout = () => reject(new Error("timeout"));
+                xhr.send();
+
+            })
+
+        }
+        // 3、数组扁平化
+        let arr = [1, 2, 3, [4, 5, [6]]];
+        function flatter(arr) {
+            let newArr = [];
+            let len = arr.length;
+            for (let i = 0; i < len; i++) {
+                if (Array.isArray(arr[i])) {
+                    newArr = newArr.concat(flatter(arr[i]));
+                } else {
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+
+        }
+        console.log(flatter(arr));
+        // 4、数组的flat
+        Array.prototype.myFlat = function (deepth = 1) {
+            let newArr = [];
+            let arr = this;
+            function flatter(arr , deepth) {
+                let len = arr.length;
+                for (let i = 0; i < len; i++) {
+                    if (Array.isArray(arr[i]) && deepth > 0) {
+                       flatter(arr[i] , deepth-1);
+                    } else {
+                        newArr.push(arr[i]);
+                    }
+                }
+
+            }
+            flatter(arr , deepth)
+            return  newArr;
+
+        }
+        const flatArr = [1, [2, [3, [4]]]];
+        console.log(flatArr.myFlat(1)); // [1, 2, [3, [4]]]
+        console.log(flatArr.myFlat(2)); // [1, 2, 3, [4]]
+        console.log(flatArr.myFlat(Infinity)); // [1, 2, 3, 4]
+        // 实现数组的push方法
+        Array.prototype.myPush = function(){
+            for(let i = 0 ; i < arguments.length ; i++){
+                this[this.length] = arguments[i];
+            }
+            return this.length;
+        }
+        flatArr.push(1)
+        console.log(flatArr)
+    </script>
+
+</body>
+
+</html>

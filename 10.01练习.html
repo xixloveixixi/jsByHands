@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10/01练习</title>
+</head>
+<body>
+    <script>
+        // 深拷贝
+        function deepCopy(obj){
+            if(typeof obj !=="object"){
+                return obj;
+            }
+            let newObj = Array.isArray(obj) ? [] : {};
+            // console.log(newObj);
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    // console.log('obj[key]' , obj[key])
+                    newObj[key] = typeof obj[key] ==="object" ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newObj;
+        }
+        let obj = {
+            name : 'jyx',
+            age : 21 , 
+            like : {
+                sport : 'swim',
+                tv : 'any'
+            }
+        }
+        let newObj = deepCopy(obj);
+        newObj.age = 33;
+      newObj.like.sport = 'tennis'; // 这样会同时影响obj.like.sport
+
+        console.log(obj);
+    </script>
+    
+</body>
+</html>

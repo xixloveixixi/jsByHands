@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.17练习</title>
+</head>
+<body>
+    <script>
+        // 1、promise.race
+        // 2、数组扁平化
+        let flatArr = [1,2,3,4,[5,6,[7]]];
+        function flat(arr){
+            let newArr = [];
+            for(let i = 0 ; i < arr.length ; i++){
+                if(Array.isArray(arr[i])){
+                    newArr = newArr.concat(flat(arr[i]));
+                }else {
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+        }
+        console.log(flat(flatArr));
+        // 3、数组的push
+        Array.prototype.myPush = function(){
+            const arr = this;
+            for(let i = 0  ; i < arguments.length ; i++){
+                arr[arr.length] = arguments[i];
+            }
+            return arr.length;
+
+        }
+        // 4、实现filter
+        // filter传入一个函数，我们回一个新的数组，它满足这个filter的函数才会添加剂数组当中
+        Array.prototype.myFilter = function(fn){
+            if(typeof fn !=="function"){
+                throw new TypeError("传入的类型应该为函数");
+            }
+            let res= [];
+            for(let i = 0 ; i < this.length ; i++){
+                if(fn(this[i])){
+                    res.myPush(this[i]);
+                }
+
+            }
+            return res;
+        }
+        let arr = [1,2,3,4,5,6];
+        console.log(arr.myFilter((val) => val % 2 === 0));
+
+
+    </script>
+    
+</body>
+</html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
             margin: 0;
             background-color: #f0f0f0;
         }
+
         div {
             padding: 20px;
             background-color: #4CAF50;
@@ -23,33 +25,48 @@
         }
     </style>
 </head>
+
 <body>
     <script>
-        let num = 0;
-        function numAdd() {
-            num++;
-            console.log(num);
-        }
-        // 当鼠标在按钮当中停留5毫秒才进行函数的执行
-        let timer = null;//接收
-        const handleMouseOver = debounce(numAdd , 500);
-        // 现在我们让它更加的通用
-        // 防抖函数
-        // 类似于电梯：打开电梯，如果等2s，在此期间有人进入，又要等2s
-        function  debounce(fn , wait){
-            let timer = null;
-            return function(){
+        // 防抖
+        // function debounce(fn , wait){
+        //            let timer = null ;
+        //    return function(){
+        //     const context = this;
+        //     const args = arguments;
+        //     if(timer){
+        //         // 如果存在，点击电梯门要打开
+        //         clearTimeout(timer);
+        //     }
+        //         // 没有就要新建一个
+        //         timer = setTimeout(() => {
+        //             fn.apply(context , args);
+        //         } , wait)
+            
+        //    }
+
+        // }
+        function debounce(fn , wait){
+          let timer = null;
+          return function(){
+                           const context = this;
+                const args = arguments;
+            if(timer){
                 clearTimeout(timer);
-                timer = setTimeout(() => {
-                    fn();
+            }else {
+                setTimeout(() => {
+                    fn.aplly(context , args);
                 } , wait)
             }
+          }
+
         }
 
-      
+
     </script>
-  <div onmouseover="handleMouseOver()">
-    鼠标移动
-</div>
+    <div onmouseover="handleMouseOver()">
+        鼠标移动
+    </div>
 </body>
+
 </html>

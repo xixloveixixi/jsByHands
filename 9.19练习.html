@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.19练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、防抖函数
+        // n秒内如果有函数发生，又要重新执行
+   function debounce(fn, time) {
+    let timer = null;
+    return function(...params) {
+        const context = this;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+            fn.apply(context, params);
+        }, time);
+    };
+}
+
+        // 2、发布订阅模式
+        // 发布-publish 
+        // 订阅-subscribe 取消订阅：unsubscribe
+        //  中间通过event连接
+        class PubSub {
+            constructor() {
+                this.event = {};//对象的形式
+            }
+            // 订阅
+            subscribe(topic, callback) {
+                if (!this.event[topic]) return;
+                this.event[topic].push(callback);
+                // 释放一些资源
+                return () => unsubscribe(topic, callback);
+                
+            }
+            // 取消订阅
+            unsubscribe(topic, callback) {
+                if (!this.event[topic]) return;
+                let index = this.event[topic].indexOf(callback);
+                if (index === -1) return;
+                this.event[topic].splice(index, 1);
+            }
+            // 发布
+            publish(topic, data, context) {
+                const callbacks = [...this.event[topic]];
+                callbacks.forEach((callback) => {
+                    //  同步处理错误
+                    try {
+                        let result = callback(data, context);
+                        // 特别处理promise
+                        if (result instanceof Promise) {
+                            result.catch((e) => console.error(e));
+                        }
+                    } catch(error) {
+                        console.error(error);
+                    }
+
+                })
+
+            }
+        }
+        // 3、文章中频率最高的
+         article = 'The quick brown fox jumps over the lazy dog. The dog barks back at the fox, but the fox ignores it and jumps again'
+        // 3、查找文章中出现频率最高的单词
+        function findMostWord(article){
+            // 将article进行分割，切记特殊符号也要分割：不是\w也不是\s,空白进行分割
+            let wordsArr = article.toLowerCase().replace(/[^\w\s]/g , '').split(' ');
+            // console.log(wordsArr);
+            let wordsMap = new Map();
+            wordsArr.forEach((word) => {
+                if(wordsMap.has(word)){
+                    let count = wordsMap.get(word) + 1;
+                    wordsMap.set(word , count);
+                }else {
+                    wordsMap.set(word , 1);
+                }
+            })
+            let mostWords = '';
+            let mostNum = 0;
+            for(let [word , count] of wordsMap){
+                if(count > mostNum) mostNum = count , mostWords = word;
+            }
+            return mostWords;
+        }
+        console.log(findMostWord(article));
+        // 4、封装异步的fetch，使用async await方式来使用
+        (async => {
+            class HttpRequestUtil{
+                // 直接获取数据就行
+                async get (url){
+                    const result = await fetch(url);
+                    const data = await result.json();
+                    return data;
+                }
+                // post 
+                async post (url , data){
+                    
+
+                }
+            }
+        })
+
+
+
+    </script>
+</body>
+
+</html>

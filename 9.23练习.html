@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.23练习</title>
+</head>
+
+<body>
+    <script>
+        let f = () => { };
+        // f.apply(thisArg: any, argArray?: any)
+        // 1、手写apply函数
+        Function.prototype.myApply = function (context, args) {
+            context = context || globalThis;
+            const key = Symbol('temp');
+            context[key] = this;
+            let res = context[key](...args);
+            delete context[key];
+            return res;
+
+        }
+        // 2、instanceOf
+        let obj = {
+            name: 'jyx',
+            ags: 21
+        }
+        console.log(obj instanceof Object);
+        function myInstance(val, comVal) {
+            if (typeof val !== "object" || val === null) {
+                throw TypeError('类型错误！！！')
+            }
+            let curPrototype = Object.getPrototypeOf(obj);
+            while (curPrototype !== null) {
+                if (curPrototype === comVal.prototype) {
+                    return true;
+                }
+                curPrototype = Object.getPrototypeOf(curPrototype);
+            }
+            return false;
+        }
+        console.log(myInstance(obj, Object));
+        
+        // 3、封装异步的fetch，使用async await方式来使用
+        (async () => {
+        class HttpRequestUtil {
+            async get(url) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    const result = await res.json();
+                    return result;
+                } catch (error) {
+                    console.error('GET request failed:', error);
+                    throw error;
+                }
+            }
+
+            async post(url, data) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    const result = await res.json();
+                    return result;
+                } catch (error) {
+                    console.error('POST request failed:', error);
+                    throw error;
+                }
+            }
+
+            async put(url, data) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    const result = await res.json();
+                    return result;
+                } catch (error) {
+                    console.error('PUT request failed:', error);
+                    throw error;
+                }
+            }
+
+            async delete(url) {
+                try {
+                    const res = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    // DELETE请求通常返回204 No Content，不一定有JSON响应
+                    if (res.status === 204) {
+                        return null;
+                    }
+                    const result = await res.json();
+                    return result;
+                } catch (error) {
+                    console.error('DELETE request failed:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // 正确使用方式
+        const httpRequestUtil = new HttpRequestUtil();
+        try {
+            const getData = await httpRequestUtil.get('https://api.example.com/data');
+            console.log(getData);
+        } catch (error) {
+            console.error('Request failed:', error);
+        }
+    })
+
+
+    </script>
+
+</body>
+
+</html>

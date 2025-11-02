@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.9练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、instanceOf
+        // 原型链上有没有相同的
+        function myInstanceOf(val, compareVal) {
+            // instanceof 的左操作数必须是对象
+            if (typeof val !== "object" || val === null) {
+                return false;
+            }
+            // 如果是函数
+            let curProtype = val.__proto__;
+            while (curProtype !== null) {
+                if (curProtype === compareVal.prototype) {
+                    return true;
+                }
+                curProtype = curProtype.__proto__;
+            }
+            return false;
+        }
+        const obj = {
+            name: 'jyx',
+            age: 18
+        }
+        const sayHi = () => {
+            console.log('hi')
+        }
+        // 测试 1: 函数 instanceof Function (您的问题)
+        console.log("1. myInstanceOf(sayHi, Function):", myInstanceOf(sayHi, Function)); // 预期输出: true
+
+        // 测试 2: 普通对象 instanceof Object
+        console.log("2. myInstanceOf(obj, Object):", myInstanceOf(obj, Object)); // 预期输出: true
+
+        // 测试 3: 数组 instanceof Array
+        const arr = [1, 2, 3];
+        console.log("3. myInstanceOf(arr, Array):", myInstanceOf(arr, Array)); // 预期输出: true
+        console.log("4. myInstanceOf(arr, Object):", myInstanceOf(arr, Object)); // 预期输出: true (因为 Array.prototype.__proto__ === Object.prototype)
+
+        // 测试 4: 基本类型 (应该返回 false)
+        console.log("5. myInstanceOf(123, Number):", myInstanceOf(123, Number)); // 预期输出: false
+        console.log("6. myInstanceOf('hello', String):", myInstanceOf('hello', String)); // 预期输出: false
+
+        // 测试 5: null (应该返回 false)
+        // 2、手写深拷贝
+        function deepCopy(obj) {
+            if (typeof obj !== "object") {
+                throw TypeError("类型错误")
+            }
+            const newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = typeof obj[key] == "object" ? deepCopy(obj[key]) : obj[key];
+                }
+
+            }
+            return newObj;
+        }
+        const copyObj = {
+            name: "jyx",
+            hobby: {
+                sports: {
+                    name: "run"
+                }
+            }
+        }
+        const newCopyObj = deepCopy(copyObj)
+        newCopyObj.name = 'hcy'
+        console.log(newCopyObj);
+        console.log(copyObj);
+        // 3、交换a,b的值，不能用临时变量
+        function change(a, b) {
+            a = a + b;
+            b = a - b;
+            a = a - b;
+            return [a, b];
+        }
+        console.log(change(1, 2));
+        // 4、实现数组的乱序输出
+        function randomArr(arr){
+            // 倒序实现随机交换
+            let len = arr.length;
+           while(len){
+            const randomIndex = Math.floor(Math.random()  * len--);
+            let temp = arr[randomIndex];
+            arr[randomIndex] = arr[len];
+            arr[len] = temp;
+           }
+           console.log(arr);
+
+        }
+        randomArr([1,2,3,4,5,6])
+
+    </script>
+
+</body>
+
+</html>

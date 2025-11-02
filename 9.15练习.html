@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.15练习</title>
+</head>
+
+<body>
+    <img src="./js手写代码/13.png" alt="">
+    <script>
+        // 1、promise.all
+        // class Promise {
+        //     // 1、定义常量
+        //     static PENDING = '待定'
+        //     static FULFILLED = '成功'
+        //     static REJECTED = '失败'
+        //     constructor(func) {
+        //         // 2、初始化一些变量
+        //         this.result = null;
+        //         this.resolveCallBacks = [];
+        //         this.rejectCallBacks = [];
+        //         this.status = Promise.PENDING;
+        //         try {
+        //             func(this.resolve.bind(this), this.reject.bind(this));
+        //         } catch (error) {
+        //             this.reject(error);
+        //         }
+        //     }
+        //     resolve(result) {
+        //         if (this.status === Promise.PENDING) {
+        //             this.status = Promise.FULFILLED;
+        //             this.result = result;
+        //             queueMicrotask(() => {
+        //                 this.resolveCallBacks.forEach((fn) => {
+        //                     fn(this.result);
+        //                 })
+        //             })
+        //         }
+        //     }
+        //     reject(result) {
+        //         if (this.status === Promise.PENDING) {
+        //             this.status = Promise.REJECTED;
+        //             this.result = result;
+        //             queueMicrotask(() => {
+        //                 this.rejectCallBacks.forEach((fn) => {
+        //                     fn(this.result);
+        //                 })
+        //             })
+        //         }
+        //     }
+        //     then(onFullfilled, onRejected) {
+        //         onFullfilled = typeof onFullfilled == "function" ? onFullfilled : (value) => { value };
+        //         onRejected = typeof onRejected == "function" ? onRejected : (error) => { throw error };
+        //         const self = this;
+        //         return new Promise((resolve, reject) => {
+        //             const handelCallBacks = (callbacks, value) => {
+        //                 let res = callbacks(value);
+        //                 return res instanceof Promise ? res.then(resolve, reject) : resolve(res);
+        //             }
+        //             switch (self.status) {
+        //                 case Promise.PENDING: {
+        //                     this.rejectCallBacks.push((value) => handelCallBacks(onRejected, self.result));
+        //                     this.resolveCallBacks.push((value) => handelCallBacks(onFullfilled, self.result));
+        //                     break;
+        //                 }
+        //                 case Promise.FULFILLED: {
+        //                     handelCallBacks(onFullfilled, self.result);
+        //                     break;
+        //                 }
+        //                 case Promise.REJECTED: {
+        //                     handelCallBacks(onRejected, self.result);
+        //                     break;
+        //                 }
+        //             }
+        //         })
+        //     }
+        //     all(promises) {
+        //         let count = 0;
+        //         let promiseArr = [];
+        //         return new Promise((resolve, reject) => {
+        //             promises.forEach((ele , index) => {
+        //                 ele.then(value => {
+        //                     count ++;
+        //                     promiseArr[index] = value;
+        //                     if(count === promises.length){
+        //                         resolve(promiseArr);
+        //                     }
+
+        //                 }).catch(error => {
+        //                     reject(error);
+        //                 })
+
+        //             })
+        //         })
+        //     }
+        // }
+        // 2、数组的map
+        let arr = [1,2,3,4,5];
+        Array.prototype.myMap = function(fn){
+            let newArr= [];
+            this.forEach((ele) => {
+                newArr.push(fn(ele));
+            })
+            return newArr;
+        }
+        let mapArr = arr.myMap((ele) => ele * 2);
+        console.log(mapArr);
+        // 3、createObject
+        function createObject(prototype){
+            function F(){};
+            F.prototype = prototype;
+            return new F();
+        }
+        console.log(createObject({
+            name : 'jyx',
+            age : 18
+        }))
+        // 4、js转换为树结构
+               source = [{
+            id: 1,
+            pid: 0,
+            name: 'body'
+        }, {
+            id: 2,
+            pid: 1,
+            name: 'title'
+        }, {
+            id: 3,
+            pid: 2,
+            name: 'div'
+        }]
+        function changeTree(nodes){
+            function mapTree(nodes , pid){
+                return nodes.filter((ele) => 
+                    ele.pid === pid
+                ).map((ele) => ({
+                        ...ele,
+                        children:mapTree(nodes , ele.id)
+                })
+                )
+            }
+           return  mapTree(nodes , 0 );
+        }
+        console.log(changeTree(source));
+        // 5、灯亮
+        function red(){
+            console.log('红色');
+        }
+          function yellow(){
+            console.log('黄色');
+        }
+          function green(){
+            console.log('绿色');
+        }
+        let task = (light , timer) => {
+            return new Promise((resolve,reject) => {
+              setTimeout(() => {
+                try{
+                    if(light === 'red') red();
+                    else if(light === 'yellow') yellow();
+                    else if(light === 'green') green();
+                    else reject(new TypeError('发生了错误'));
+                    resolve();
+                }catch(error){
+                    reject(error);
+                }
+              } , timer)
+            })
+        }
+        let step = (fn , timer) => {
+           task('red' , 3000)
+           .then(() => task('yellow' , 2000))
+           .then(() => task('green' , 1000))
+           .then(step)
+        }
+        // step();
+        // 6、移除小孩
+        function childrenNum(num , count){
+            let childrenArr = [];
+            let index= 0 ;
+            for(let i = 0 ; i < num ; i++){
+                childrenArr.push( i + 1);
+            }
+            while(childrenArr.length > 1){
+                index = (index + 2) % childrenArr.length;
+                childrenArr.splice(index , 1); 
+            }
+            return childrenArr[0];
+        }
+        console.log(childrenNum(30 , 3));
+        // 7、用Promise实现图片的异步加载
+        // function Imgaync(url){
+        //     return new Promise((resolve , reject) => {
+        //         // 创建一个容器
+        //         let img = new Image();
+        //         img.src = url;
+        //         img.onload = function(){
+        //             console.log('图片正在加载中......');
+        //             resolve(img);
+        //         }
+        //         img.onerror = function(){
+        //              console.log('图片加载失败！')
+        //             reject(new TypeError('图片加载错误'));
+        //         }
+        //     })
+        // }
+        // Imgaync('url').then((img) => {
+        //     console.log('异步加载成功')
+        // }).catch((error) => {
+        //     console.error(error)
+        // })
+        function Imgaync(url){
+    return new Promise((resolve, reject) => {
+        // 创建一个容器
+        let img = new Image();
+        img.src = url;
+        img.onload = function(){
+            console.log('图片正在加载中......');
+            resolve(img); // 修复：使用img变量
+        }
+        img.onerror = function(){
+            console.log('图片加载失败！')
+            reject(new Error('图片加载失败')); // 修复：创建新的错误对象
+        }
+    })
+}
+
+Imgaync('./js手写代码篇/13.png').then((img) => { 
+    console.log('异步加载成功', img)
+}).catch((error) => {
+    console.error(error)
+})
+
+
+
+    </script>
+
+</body>
+
+</html>

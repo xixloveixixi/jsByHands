@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排序算法前五个</title>
+</head>
+
+<body>
+    <script>
+        // 1、冒泡排序
+        let arr = [5, 3, 8, 4, 6];
+        function bubble_sort(arr) {
+            // 什么时候结束？当isSwap为false的时候
+            let len = arr.length;
+            for (let i = 0; i < len; i++) {
+                let isSwap = false;
+                for (let j = 0; j < len - i - 1; j++) {
+                    if (arr[j] > arr[j + 1]) {
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        isSwap = true;
+                    }
+                }
+                if (!isSwap) break;
+            }
+        }
+        bubble_sort(arr);
+        console.log('冒泡排序', arr);
+        // 2、选择排序：在未排序里面选择最小的与未排序中的第一个交换
+        let arr2 = [65, 34, 72, 23]
+        function selection_sort(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n; i++) {
+                let minIndex = i;
+                for (let j = i + 1; j < n; j++) {
+                    // 寻找最小的
+                    if (arr[minIndex] > arr[j]) {
+                        minIndex = j;
+                    }
+                }
+                // 交换
+                [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];
+            }
+        }
+        selection_sort(arr2);
+        console.log(arr2);
+        // 3、插入排序
+        let arr3 = [65, 34, 72, 23];
+        function insertion_sort(arr) {
+            let n = arr.length;
+            let prevIndex, cur;
+            // 默认第一个就是已经排序好的
+            for (let i = 1; i < n; i++) {
+                cur = arr[i];//拿到未排序的第一个
+                prevIndex = i - 1;
+                // 将比cur大的向后移动
+                while (prevIndex >= 0 && arr[prevIndex] > cur) {
+                   arr[prevIndex + 1] = arr[prevIndex];
+                   prevIndex--;
+                }
+                // 将cur插入
+                arr[prevIndex + 1] = cur;
+            }
+        }
+        insertion_sort(arr3);
+        console.log(arr3);
+        // 4、希尔排序
+        let arr4 = [45,23,12,56,78,35,22,90]
+        function shell_sort(arr){
+            let len = arr.length;
+            // 增量部分
+            for(let gap = Math.floor(arr.length / 2) ; gap > 0; gap= Math.floor(arr.length / 2)){
+                // 从gap开始
+                for(let i = gap ; i <len ; i++){
+                    let cur = arr[i];//当前的
+                    let j = i - gap;//交换的
+                    while(j && cur < arr[j]){//进入交换
+                        arr[i + gap] = arr[j];
+                        j -= gap;
+                    }
+                    // 放入
+                    arr[j + gap] = cur;
+                }
+
+            }
+
+        }
+        selection_sort(arr4);
+        console.log('希尔排序:' ,arr4);
+        // 5.归并排序
+        // 分解＋合并
+        let arr5 = [45,23,12,56,78,35,22,90];
+        function merge_sort(arr){
+            let len = arr.length;
+            if(len<= 1) return arr;//单个不进行归并,这也是递归的出口
+            let mid = Math.floor(len / 2);
+            let left = arr.slice(0 , mid);
+            let right = arr.slice(mid , len);
+            return merge(merge_sort(left) , merge_sort(right));
+        }
+        function merge(left , right){
+            let res = [];
+            while(left.length && right.length){
+                if(left[0] < right[0]){
+                    res.push(left.shift());
+                }else {
+                    res.push(right.shift());
+                }
+            }
+            while(left.length){
+                res.push(left.shift());
+            }
+             while(right.length){
+                res.push(right.shift());
+            }
+            return res;
+        }
+        arr5 = merge_sort(arr5);
+        console.log('归并排序' , arr5);
+        // 6、快速排序
+        let arr6 = [45,23,12,56,78,35,22,90];
+        // 基准加分区
+        function quickSort(arr){
+            let len = arr.length;
+            // 递归出口：len小于等于1的时候
+            if(arr.length  <= 1){
+                return arr;
+            }
+            // 获取中间的标志值
+            let pivotIndex = Math.floor(len / 2);
+            // 要把这个基准值从数组当中取出来
+            let pivot = arr.splice(pivotIndex,1)[0];
+            let left = [];
+            let right = [];
+            // 进行比较
+            for(let i = 0 ; i < arr.length ; i++){
+                if(arr[i] > pivot){
+                    right.push(arr[i]);
+                }else {
+                    left.push(arr[i]);
+                }
+            }
+            return quickSort(left).concat([pivot], quickSort(right));
+            
+
+        }
+        arr6 = quickSort(arr6);
+        console.log('快速排序',arr6);
+        // 7、堆排序
+        // 比较的是i,左边的子树为2I + 1 ,右边的子树为2i + 2
+        // 要求i是最大的
+        let arr7 = [45,23,12,56,78,35,22,90];
+        // 从最后一个开始排列
+        function heap_sort(arr){
+            
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.1练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、手写浅拷贝
+        let obj = {
+            name: 'jyx',
+            hobby: {
+                outdoor: 'swim',
+                indoor: 'ball'
+            }
+        }
+        function copy(obj) {
+            if (typeof obj !== "object" || obj === null) {
+                return obj;
+            }
+            let newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = obj[key];
+                }
+            }
+            return newObj;
+        }
+        let newObj = copy(obj);
+        newObj.hobby.outdoor = 'hcy';
+        console.log(newObj);
+        console.log(obj);
+        // 2、数组的map
+        let arr = [1, 2, 3, 4];
+        Array.prototype.myMap = function (fn) {
+            if (!Array.isArray(this)) {
+                throw new TypeError('类型错误!')
+            }
+            let arr = this;
+            let mapArr = [];
+            for (let i = 0; i < arr.length; i++) {
+                mapArr.push(fn(arr[i]));
+            }
+            return mapArr;
+        }
+        let newArr = arr.myMap((val) => val * 2);
+        console.log(newArr);
+
+        // 3、解决add(1)(2)(3)
+        function add(...args) {
+            //求和
+            return args.reduce((a, b) => a + b)
+        }
+        function currying(fn) {
+            let args = []
+            return function temp(...newArgs) {
+                if (newArgs.length) {
+                    args = [
+                        ...args,
+                        ...newArgs
+                    ]
+                    return temp
+                } else {
+                    let val = fn.apply(this, args)
+                    args = [] //保证再次调用时清空
+                    return val
+                }
+            }
+        }
+        let addCurry = currying(add)
+        console.log(addCurry(1)(2)(3)())
+
+
+        // 4、类数组转化为数组
+        // 5、使用 reduce 求和
+        arr1 = [1,2,3,[[4,5],6],7,8,9]
+        // 先扁平化然后求和
+        console.log(arr1.flat(Infinity).reduce((total , prev) => total + prev,0))
+        arr2 = [{a:1, b:3}, {a:2, b:3, c:4}, {a:3}]
+        console.log(arr2.reduce((total , prev) => 
+            // console.log(prev["a"]);
+            total + prev["a"]
+        ,0))
+
+    </script>
+
+</body>
+
+</html>

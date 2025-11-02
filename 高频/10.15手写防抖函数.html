@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function debounce(fn , wait){
+            let timer = null;
+            // 返回函数
+            return function(...args){
+                // 如果timer存在
+                if(timer){
+                    // 清除
+                    clearTimeout(timer);
+                }
+                timer = setTimeout(() => {
+                    fn.apply(this , ...args);
+                } , wait)
+            }
+
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.10练习</title>
+</head>
+<body>
+    <script>
+        // 1、new
+        const obj = new Object({
+            name: 'jyx',
+            age: 18
+        });//传入的是一个构造函数，还有一些参数
+        function myNew(fn , ...args){
+            if(typeof fn !=="function"){
+                throw new TypeError("fn 必须是一个函数")
+            }
+            const obj = Object.create(fn.prototype);
+            const res = fn.apply(obj , args);
+            return (typeof res =="object" ? res : obj);
+
+        }
+        // 2、日期格式化函数
+           // 2020/12/01
+           console.log(formatDate(new Date('2020-12-01'), 'yyyy/MM/dd'))
+        function formatDate(time , format){
+            const year = time.getFullYear();
+            const mounth = time.getMonth() + 1 < 10 ? '0' + (time.getMonth() + 1) : time.getMonth() + 1;
+            const date = time.getDate() < 10 ? '0' + time.getDate() : time.getDate();
+
+            format = format.replace("yyyy" , year);
+            format = format.replace("MM" , mounth);
+            format = format.replace("dd" , date);
+            return format;
+
+        }
+    
+
+        
+        // 3、数组乱序化
+        function randomArr(arr){
+            let len = arr.length;
+            while(len){
+                let random = Math.floor(Math.random() * len--);
+                const temp = arr[random];
+                arr[random] = arr[len];
+                arr[len] = temp;
+
+            }
+            return arr;
+
+        }
+        console.log(randomArr([1,2,3,4,5]))
+
+        // 4、实现数组元素求和
+        function sum(arr){
+            let res = arr.reduce((total , cur) => total += cur , 0)
+            console.log(res);
+        }
+        sum([1,2,3])
+
+    </script>
+    
+</body>
+</html>

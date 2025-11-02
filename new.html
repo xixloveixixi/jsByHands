@@ -9,22 +9,19 @@
 
 <body>
   <script>
+//  new的手写
    function myNew(constructor , ...args){
-    // 1、判断传入的是否为函数
+    // 1.判断类型
     if(typeof constructor !== 'function'){
-      throw  Error('传入的必须是应该函数');//抛出错误
+      throw new Error('传入的必须为函数')
     }
-    // 2、新建一个对象
-    let obj = {};
-    // 3、原型指向
-    Object.setPrototypeOf(obj , constructor.prototype);
-    // 4、this指向并执行函数call
-    const res = constructor.call(obj , ...args);
-    // 5、返回数据
-    return res instanceof Object ? res : obj;
-
+    // 2.新建一个对象
+    let newObj = Object.create(constructor.prototype);
+    // 3.改变this指向以及执行函数获得结果
+    const res = constructor.apply(newObj , ...args);
+    // 4.返回
+    return (typeof res === 'object' && typeof res !== null) ? res : newObj;
    }
-
   </script>
 
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.24练习</title>
+</head>
+
+<body>
+    <script>
+        // 2、封装异步的fetch，使用async await方式来使用
+        (async => {
+            class HttpRequestUtil {
+                async get(url) {
+                    try {
+                        const res = await fetch(url);
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        const data = await res.json();
+                        return data;
+                    } catch(error) {
+                        console.error(error);
+                        throw error;
+                    }
+                }
+                 async post(url , data) {
+                    try {
+                        const res = await fetch(url,{
+                            method : 'POST',
+                            headers:{
+                                "Content-Type" : "application/json"
+                            },
+                            body:JSON.stringify(data)
+                        });
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        const data = await res.json();
+                        return data;
+                    } catch(error) {
+                        console.error(error);
+                        throw error;
+                    }
+                }
+                 async put(url , data) {
+                    try {
+                        const res = await fetch(url,{
+                            method : 'PUT',
+                            headers:{
+                                "Content-Type" : "application/json"
+                            },
+                            body:JSON.stringify(data)
+                        });
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        const data = await res.json();
+                        return data;
+                    } catch(error) {
+                        console.error(error);
+                        throw error;
+                    }
+                }
+                 async delete(url , data) {
+                    try {
+                        const res = await fetch(url,{
+                            method : 'DELETE',
+                            headers:{
+                                "Content-Type" : "application/json"
+                            },
+                            body:JSON.stringify(data)
+                        });
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        // 单独处理204
+                        if(res.status === 204){
+                            return null;
+                        }
+                        const data = await res.json();
+                        return data;
+                    } catch(error) {
+                        console.error(error);
+                        throw error;
+                    }
+                }
+            }
+        })
+        // 2、实现prototype继承
+        function parentFn(flag1){
+            this.flag1 = flag1;
+        }
+        function childFn(flag2){
+            this.flag2 = flag2;
+        }
+        // 一个父对象
+        let parent = new parentFn(false);
+        // 子继承父
+        childFn.prototype = parent;
+        // 一个子对象
+        let child = new childFn(true);
+        console.log(child.flag1);
+        console.log(child.flag2);
+    </script>
+
+</body>
+
+</html>

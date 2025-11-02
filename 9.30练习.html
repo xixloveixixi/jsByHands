@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.30练习</title>
+</head>
+<body>
+    <script>
+        // 手写浅拷贝
+        function copy(obj){
+            if(typeof obj !=="object"){
+                throw TypeError('类型错误');
+            }
+            // console.log(obj);
+            let newObj = Array.isArray(obj) ? [] : {};
+            for(let key in obj){
+                console.log(key);
+                if(obj.hasOwnProperty(key)){
+                    newObj[key] = obj[key];
+                }
+            }
+                          return newObj;
+
+        }
+        let obj = {
+            name : 'jyx',
+            age : 21 , 
+            like : {
+                sport : 'swim',
+                tv : 'any'
+            }
+        }
+        let newObj = copy(obj);
+        newObj.age = 33;
+      newObj.like.sport = 'tennis'; // 这样会同时影响obj.like.sport
+
+        console.log(obj);
+        // 浅拷贝仅仅是简单复制了一层，对于嵌套对象只是简单的复制了引用，复制的嵌套对象和之前的嵌套对象指向同一个地址
+        
+    </script>
+    
+</body>
+</html>

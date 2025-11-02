@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.7练习</title>
+</head>
+
+<body>
+    <script>
+
+        // sayHi.call()
+        // 1、手写call函数thisArg: any, ...argArray: any[]
+        Function.prototype.myCall = function (context, args) {
+            // call是改变this指向，要获取当前的this,args
+            if (typeof this !== "function") {
+                throw new TypeError("类型错误")
+            }
+            const key = Symbol('temp');
+            context = context ?? window;
+            context[key] = this;
+            args = args ?? [];
+            const res = context[key](...args);
+            delete context[key];
+            return res;
+        }
+        function Father() {
+            this.name = 'father';
+            this.age = 18;
+            this.sayHi = function () {
+                console.log(`hi,我是${this.name},今年${this.age}`);
+            };
+        }
+
+        const f = new Father();
+        f.sayHi(); // 输出：hi,我是father,今年18
+        const son = {
+            name: 'son',
+            age: 18
+        }
+        f.sayHi.myCall(son)
+        // 2、手写promise封装ajax
+        function promiseAjax() {
+            return new Promise((resolve, reject) => {
+                const SERVER_URL = '/server';
+                const xhr = new XMLHttpRequest();
+                xhr.responseType = "json";
+                xhr.open("GET", SERVER_URL);
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState !== 4) {
+                        return;
+                    }
+                    if (xhr.status === 200) {
+                        resolve(xhr.response);
+                    } else {
+                        reject(xhr.statusText);
+                    }
+                }
+                xhr.onerror = () => reject(new Error("Network Error"));
+                xhr.ontimeout = () => reject(new Error("Request Timeout"));
+                xhr.send();
+            })
+
+        }
+        // 3、手写深拷贝
+        function deepCopy(obj) {
+            if (typeof obj !== "object" || obj === null) {
+                return obj;
+            }
+            const newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = typeof obj[key] === "object" ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newObj;
+        }
+            dateFormat(new Date('2020-12-01'), 'yyyy/MM/dd') // 2020/12/01
+            dateFormat(new Date('2020-04-01'), 'yyyy/MM/dd') // 2020/04/01
+            dateFormat(new Date('2020-04-01'), 'yyyy年MM月dd日') // 2020年04月01
+            // 实现日期格式化函数： dateFormat
+             function dateFormat(date , format){
+                // date.getFullYear() 获取年份
+                // date.getMonth() + 1 获取月份
+                // date.getDate() 获取日期
+                const month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) :date.getMonth() + 1;
+                const day = date.getDate() < 10 ? '0' + (date.getDate()) :date.getDate();
+                format = format.replace('yyyy' , date.getFullYear());
+                format = format.replace('MM' ,month );
+                format = format.replace('dd' ,day);
+                console.log(format);
+             }
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写call</title>
+</head>
+<body>
+    <script>
+        let fn = () => {};
+        // fn.call()
+        Function.prototype.myCall = function(thisArg, ...argArray){
+            let context = thisArg ?? globalThis;
+            let args = argArray;
+            let key = Symbol('temp');
+            context[key] = this;
+            let res = context[key](...args);
+            delete context[key];
+            return res;
+
+        }
+    </script>
+    
+</body>
+</html>

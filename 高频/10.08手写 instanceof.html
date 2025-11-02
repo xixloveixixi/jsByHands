@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写 instanceof</title>
+</head>
+<body>
+    <script>
+        // 手写 instanceof
+        let obj = {
+            age : 19
+        }
+        console.log(obj instanceof Object);
+        function myInstanceOf(val , comVal){
+            if(typeof val !=="object" || val === null){
+               return false;
+            }
+            if(!comVal || typeof comVal !=="function") return false;
+            let curProto = val.__proto__;
+            while(curProto !== null){
+                if(curProto === comVal.prototype){
+                    return true;
+                }
+                curProto = curProto.__proto__;
+            }
+            return false;
+        }
+       console.log( myInstanceOf(obj , Object))
+
+    </script>
+    
+</body>
+</html>

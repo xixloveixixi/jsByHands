@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写promise练习2</title>
+</head>
+
+<body>
+    <script>
+        class Promise{
+            // 1、定义状态
+            static PEDDING = '待定'
+            static FULFILLED = '成功'
+            static REJECTED = '失败'
+            // 2、初始化
+            constructor(fn){
+                this.result = null;
+                this.resolveCallbacks = [];
+                this.rejectCallbacks = [];
+                this.status = Promise.PEDDING;
+
+                try{
+                    fn(this.resolve.bind(this) , this.reject.bind(this));
+
+                }catch(error){
+                    this.reject(error);
+
+                }
+
+            }
+            // 3、resolve&&reject
+            resolve(result){
+                if(this.status === Promise.PEDDING){
+                    this.status = Promise.FULFILLED;
+                    this.result = result;
+                    resolveCallbacks.forEach(fn => {
+                        setTimeout(() => {
+                            fn(result);
+                        } , 0)
+                        
+                    });
+                }
+            }
+            reject(result){
+                if(this.status === Promise.PEDDING){
+                    this.status = Promise.REJECTED;
+                    this.result = result;
+                    rejectCallbacks.forEach(fn => {
+                        setTimeout(() => {
+                            fn(result);
+                        } , 0)
+                        
+                    });
+                }
+            }
+            // 4、then
+            then(onFulfilled , onRejected){
+                onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+                onRejected = typeof onRejected === 'function' ? onRejected : reason => {throw reason};
+
+                const self = this;
+
+                return new Promise((resolve , reject) => {
+                    const handelCallbacks = (backs , result) => {
+                        const res = backs(result);
+                        return typeof res === Promise ? res.then(resolve , reject) : resolve(res);
+                    }
+                    switch(self.status){
+                        case Promise.PEDDING : {
+                            self.resovleCallbacks.push(value => handelCallbacks(onFulfilled , self.result));
+                            self.rejectCallbacks.push(value => handelCallbacks(onRejected , self.result));
+                            break;
+                        }
+                        case Promise.FULFILLED : {
+                            handelCallbacks(onFulfilled , self.result);
+                            break;
+                        }
+                          case Promise.REJECTED : {
+                            handelCallbacks(onRejected , self.result);
+                            break;
+                        }
+                    }
+
+                })
+            }
+            // all
+            all(promises){
+                let len = promises.length ;
+                let count = 0 ;
+                let resultArr = [];
+                return new Promise((resolve , reject) => {
+                    for(let i = 0 ; i < len ; i++){
+                        promises[i].then(val => {
+                            resultArr.push(val);
+                            count ++;
+                            if(count === len){
+                                resolve(resultArr);
+                            }
+                        } , 
+                    error => reject(error))
+                    }
+                })
+            }
+            race(promises){
+                return new Promise((resolve , reject) => {
+                    for(let i = 0 ; i < promises.length ; i++){
+                        promises[i].then(resolve , reject);
+                    }
+                })
+            }
+        }
+    </script>
+
+</body>
+
+</html>

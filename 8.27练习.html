@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.27练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、手写ajax
+        function myAjax() {
+            const SERVER_URL = '/server';
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", SERVER_URL, true);
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+                if (xhr.status === 200) {
+                    console.log(xhr.response);
+                } else {
+                    console.log(xhr.statusText);
+                }
+            }
+            xhr.responseType = "json";
+            xhr.send(null);
+        }
+        // 2、数组的push
+        let arr = [1, 2, 3, 4];
+        Array.prototype.myPush = function () {
+            const arr = this;
+            for (let i = 0; i < arguments.length; i++) {
+                arr[arr.length] = arguments[i];
+            }
+            return arr.length;
+        }
+        arr.myPush(6);
+        console.log(arr);
+        // 3、将数字每千分位用逗号隔开
+        // 判断是否有小数点：12,323.33 1,232,323
+        function formatWithReverse(val) {
+            let strVal = String(val);
+            let [bigNum, smallNum] = strVal.includes('.') ? strVal.split('.') : [strVal, ''];
+            let resultArr = [];
+            // 先反转
+            let bigNumArr = Array.from(bigNum).reverse();
+            for (let i = 0; i < bigNum.length; i++) {
+                if (i > 0 && i % 3 === 0) {
+                    resultArr.push(',');
+                }
+                resultArr.push(bigNumArr[i]);
+            }
+            // 翻转回来
+            bigNum = resultArr.reverse().join('');
+            return smallNum ? bigNum + '.' + smallNum : bigNum;
+        }
+        console.log(formatWithReverse(12323.33)); // 输出: "12,323.33"
+        console.log(formatWithReverse(1232323));  // 输出: "1,232,323"
+        // 复习：
+        // bindmk 
+        let fn = () => {};
+        // fn.bind()
+        Function.prototype.myBind = function(context , args){
+            if(typeof this !=="function"){
+                throw new TypeError('类型错误!!');
+            }
+            context = context ?? window;
+            const fn = this;
+            const boundFn =  function(newArgs){
+               const finalThis = this instanceof boundFn ? this : context;
+               return fn.apply(finalThis , [...args , ...newArgs]);
+            }
+            boundFn.prototype = Object.create(fn.prototype);
+            return boundFn;
+        }
+        function curry(fn){
+            if(typeof fn !=="function"){
+                throw TypeError('类型错误');
+            }
+            return function curried(...args){
+                if(args.length >= fn.length){
+                    // 直接执行
+                    return fn.apply(this , args);
+                }else {
+                    // 没有的话，继续收集
+                    return function(...newArgs){
+                        return curried.apply(this,args.concat(newArgs));
+                    }
+                }
+            }
+
+        }
+    </script>
+
+</body>
+
+</html>

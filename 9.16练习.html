@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.16练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、字符串的repeat
+        String.prototype.myRepeat = function (count) {
+            let str = this;
+            let newStr = '';
+            for (let i = 0; i < count; i++) {
+                newStr += str;
+            }
+            return newStr;
+        }
+        let str = 'abc';
+        console.log(str.myRepeat(4));
+        // 2、	es5和es6求函数参数的和
+        console.log(sumES5(1, 2, 3, 4)); // 应该输出: 10
+        console.log(sumES5(10, 20));     // 应该输出: 30
+        console.log(sumES5(-1, -2, -3)); // 应该输出: -6
+        console.log(sumES5());           // 应该输出: 0
+        console.log(sumES6(1, 2, 3, 4));       // 应该输出: 10
+        console.log(sumES6(10, 20));           // 应该输出: 30
+        console.log(sumES6(-1, -2, -3));       // 应该输出: -6
+        console.log(sumES6());                 // 应该输出: 0
+        function sumES5() {
+            let sum = 0;
+            for (let i = 0; i < arguments.length; i++) {
+                sum += arguments[i];
+            }
+            return sum;
+        }
+        function sumES6(...rest) {
+            if (rest.length === 0) return 0;
+            return rest.reduce((total, prev) => total + prev);
+
+        }
+        // 3、instanceOf
+        function myInstanceOf(obj, comVal) {
+            if (typeof obj !== "object" || obj === null) {
+                throw TypeError('类型错误！');
+            }
+            let curPrototype = obj.__proto__;
+            while (curPrototype !== null) {
+                if (curPrototype === comVal.prototype) {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+        let obj = {
+            name: 'jyx',
+            age: 18
+        }
+        console.log(obj instanceof Object);
+        console.log(myInstanceOf(obj, Object));
+        // 4、用Promise实现图片的异步加载
+        function ImgAsync(src) {
+            return Promise((resolve, reject) => {
+                let img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    resolve(img);
+                    console.log('异步加载中......')
+                }
+                img.onerror = () => {
+                    reject(new TypeError('加载失败'));
+                    console.log('异步加载失败......')
+                }
+
+            })
+        }
+        // ImgAsync('url').then((img) => {
+        //     console.log('异步加载成功');
+
+        // }).catch((error) => {
+        //     console.error(error);
+
+        // })
+        // 5、发布订阅模式
+        // 映射到vue当中应该可以更好的理解
+        // 发布者就是data：当数据被修改时，主动通知关联的 Dep 实例进行依赖更新
+        // 订阅者就是watcher：监视指定数据的变化，数据变更时执行更新视图等回调
+        // 中间的通信道就是dep:维护某个数据的订阅者列表（Array<watcher>），管理依赖关系
+        // 数据对象 (Data) → 被访问时收集依赖 (Dep.addSub()) → 数据变更时触发通知 (Dep.notify()) → Watcher 执行回调
+        // 核心方法主要有：注册订阅者、移除订阅者以及数据改变后订阅者进行对应的更新
+
+class PubSub{
+    constructor() {
+        this.events = {}; // &#9989; 关键修复：用对象存储主题
+    }
+    // 注册订阅者：
+    subscribe(topic , handel){
+        if(!this.events[topic]){
+            // 如果说是一个新的主题：
+            this.events[topic] = [];
+        }
+        // 如果不是一个新的主题，就直接添加对应的处理函数
+        this.events[topic].push(handel);
+        // 最后要返回起效订阅的函数:主动释放资源以免内存泄露
+        return () => this.unsubscribe(topic , handel);
+    }
+    // 取消订阅：
+    unsubscribe(topic , handel){
+        // 判断是否有
+        if(!this.events[topic]) return ;
+        // 有的话就要取消订阅了
+        const index = this.events[topic].indexOf(handel);
+        if(index !== -1){
+            this.events[topic].splice(index , 1);
+        }
+    }
+    // 发布消息:
+    publish(topic , data , context){
+        if(!this.events[topic]) return;
+        const subscribes = [...this.events[topic]];//获得所有的处理函数
+        subscribes.forEach(callbacks => {
+            try{//同步捕捉错误
+                const result = callbacks(data , context);
+                if(result instanceof Promise){
+                    result.catch(e => console.error('异步发生了错误'  , e))
+                }//对于promise这种异步的瑶特殊对错误进行处理
+            }catch(error){
+                console.error('同步发生了错误' , error);
+            }
+        })
+    }
+
+}
+ const bus = new PubSub();
+
+// &#9989; 正确用法
+bus.subscribe('validPromise', () => {
+    return new Promise(resolve => setTimeout(() => resolve('FAIL'), 1000));
+});
+
+// &#10060; 错误用法（会触发你的报错）
+bus.subscribe('invalidPromise', () => {
+    return  Promise(resolve => setTimeout(() => resolve('FAIL'), 1000)); // &#10060; 缺少 new!
+});
+
+bus.publish('validPromise'); // 正常执行
+// bus.publish('invalidPromise'); // 触发 TypeError
+
+
+   </script>
+
+</body>
+
+</html>

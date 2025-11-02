@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.11练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、new
+        let obj = new Object();
+        console.log(obj);
+        function myNew(constructor, ...args) {
+            //    new方法主要做的是四件事情：创造一个obj、使用原型链将obj和constructor连接起来、改变obj的指向、对res的类型进行判断返回
+            let obj = Object.create(constructor.prototype);
+            let res = constructor.apply(obj, args);
+            return typeof res === "object" ? res : obj;//如果构造函数返回非对象（包括 null），应该返回新创建的对象；只有当返回值是对象时才返回该值
+
+        }
+        // 2、解决add(1)(2)(3)
+        // 使用柯里化的方法：
+        function sum(...args) {
+            return args.reduce((total, prev) => total + prev, 0);
+        }
+        function currying(fn) {
+            let allArgs = [];
+            return function curried(...newArgs) {
+                if (newArgs.length > 0) {
+                    // 还有参数存在
+                    allArgs = [...allArgs, ...newArgs];
+                    return curried;
+                } else {
+                    // 没有传入参数了
+                    return fn.apply(this, allArgs);
+                }
+
+            }
+        }
+        let add = currying(sum);
+        console.log(add(1)(2)(3)())
+        // 3、es5和es6求函数参数的和
+        // es5：
+        function sumES5() {
+            let res = 0;
+            for (let i = 0; i < arguments.length; i++) {
+                res += arguments[i];
+            }
+            return res;
+        }
+        console.log(sumES5(1, 2, 3, 4)); // 应该输出: 10
+        console.log(sumES5(10, 20));     // 应该输出: 30
+        console.log(sumES5(-1, -2, -3)); // 应该输出: -6
+        console.log(sumES5());           // 应该输出: 0
+        // es6:
+        function sumES6(...rest) {
+            return rest.reduce((total, prev) => total + prev, 0)
+
+        }
+        console.log(sumES6(1, 2, 3, 4));       // 应该输出: 10
+        console.log(sumES6(10, 20));           // 应该输出: 30
+        console.log(sumES6(-1, -2, -3));       // 应该输出: -6
+        console.log(sumES6());                 // 应该输出: 0
+        // 4、instanceOf
+        // 原型链上面的匹配：
+        function myInstanceOf(val, comVal) {
+            if (typeof val !== "object" || val === null) {
+                throw TypeError('类型错误!');
+            }
+            let curPrototype = val.__proto__;
+            while (curPrototype !== null) {
+                if (curPrototype === comVal.prototype) {
+                    return true;
+                }
+                curPrototype = curPrototype.__proto__;
+            }
+            return false;
+        }
+        console.log(myInstanceOf(obj, Object))
+        console.log(obj instanceof Object)
+        //    5、解析url为param对象
+        let url = 'http://www.domain.com/?user=anonymous&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
+       console.log( parseParam(url));
+        /* 结果
+        { user: 'anonymous',
+          id: [ 123, 456 ], // 重复出现的 key 要组装成数组，能被转成数字的就转成数字类型
+          city: '北京', // 中文需解码
+          enabled: true, // 未指定值得 key 约定为 true
+        }
+        */
+        function parseParam(url) {
+            // 1、将?之后的保留下来
+            let rest = url.split('?')[1];
+            // console.log(rest);
+            // 2、'&'分割得到[key , val]
+            let pair = rest.split('&');
+            // console.log(pair);
+            // 3、对pair进行遍历，得到[key , val]格式的数据
+            let pairParam = new Map();
+            pair.forEach(element => {
+                let [key , val] = element.split('=');
+                // 解码：：URL 参数通常会被编码，需要使用 decodeURIComponent 解码：
+                decodeKey = decodeURIComponent(key);
+                decodeVal = val ? decodeURIComponent(val) : '';
+                // 5、如果遇到重复的键名，应该转换为数组
+               if(pairParam.has(decodeKey)){
+                let exParam = pairParam.get(decodeKey);
+                if(Array.isArray(exParam)){
+                    exParam.push(decodeVal);
+                }else {
+                pairParam.set(decodeKey , [exParam , decodeVal]);
+                }
+               }else {
+                pairParam.set(decodeKey , decodeVal);
+               }
+            });
+            // console.log(pairParam);
+            let ans = {};
+            for(let [key , val] of pairParam){
+                ans[key] = val;
+            }
+            return ans ;
+        }
+
+    </script>
+
+</body>
+
+</html>

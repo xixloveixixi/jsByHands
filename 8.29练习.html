@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.29练习</title>
+</head>
+<body>
+    <script>
+        function sumBigNumber(a , b){
+            let temp = 0;//进位
+            let ans = '';//字符存储大的数字
+            a = a.split('');
+            b = b.split('');
+            // console.log(a)
+            while(a.length || b.length || temp){
+                temp += ~~a.pop() + ~~b.pop();
+                ans = (temp % 10) + ans;
+                temp = temp > 9 ? 1 : 0;
+            }
+            // console.log(ans);
+            return ans.replace(/^0+/ , '') || '0';
+
+        }
+        console.log(sumBigNumber("123", "456"));      // 579
+console.log(sumBigNumber("999", "1"));        // 1000
+console.log(sumBigNumber("0", "0"));          // 0
+console.log(sumBigNumber("000", "000"));      // 0
+console.log(sumBigNumber("10000000000000000000", "1")); // 10000000000000000001
+console.log(sumBigNumber("99999999999999999999", "1")); // 100000000000000000000
+// 实现 add(1)(2)(3)
+// 柯里化
+function sum(...args){
+    return args.reduce((total , prev) => total + prev , 0);
+}
+function curry(fn){
+    let allArgs = [];
+    return function curried(...args){
+        if(args.length >0){
+            allArgs = [...allArgs , ...args];
+            return curried;
+        }else {
+            //没有传参数->直接返回执行
+                return fn.apply(this , allArgs);
+            
+        }
+    }
+}
+
+const add = curry(sum);
+
+// 链式调用，最后用 () 触发计算
+const result = add(1)(2)(3)();
+console.log(result); // 输出: 6
+
+// 也可以一次性传入多个参数
+const result2 = add(1, 2)(3, 4, 5)();
+console.log(result2); // 输出: 15
+
+    </script>
+    
+</body>
+</html>

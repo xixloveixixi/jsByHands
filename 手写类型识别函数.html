@@ -14,32 +14,72 @@
         // 使用typeOf判断类型，但是null返回的是object
         // 只能判断值类型，其他返回的是object
         // Object.prototype.toString.call():判断数据类型
-        console.log(Object.prototype.toString.call([1,2,3]))//[object Object] [object Array]
+        // console.log(Object.prototype.toString.call([1,2,3]))//[object Object] [object Array]
 
 
+        // function getType(value){
+        //     // 对于null要添加一个特殊的检查
+        //     if(value === null){
+        //         return value + "";
+        //     }
+        //     // 分两个方面：直接使用typeof和使用Object.prototype.toString.call
+        //     // 如果是值类型：、
+        //     if(typeof value !== 'object'){//小写
+        //         return typeof value;
+        //     }else {
+        //         // 如果是对象，就要使用Object.prototype.toString.call
+        //         const valueContext = Object.prototype.toString.call(value).slice(8 , -1).toLowerCase();
+        //         return valueContext;
+        //     }
+        // }
+        // console.log(getType(2)); // "number"
+        // console.log(getType([1,2,3])); // "Array"
+        // console.log(getType(null)); // "Null"
+        // // 其他测试
+        // console.log(getType({})); // "Object"
+        // console.log(getType(function(){})); // "Function"？BNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+        // console.log(getType(/regex/)); // "RegExp"
+        // console.log(getType(new Date())); // "Date"
+
+        console.log(typeof 1) //number
+        console.log(typeof '111') //string
+        console.log(typeof null) //object
+        console.log(typeof true) //boolean
+        console.log(typeof s) //undefied
+        console.log(typeof [1,2,3]) //object
+
+        // typeof可以判断简单的数据类型：number/string/boolean
+        // 但是对于一些复杂的数据类型：function/array都是返回的object
+        // 我们要使用Object.prototype.toString.call：找到复杂数据的类型
+        console.log(Object.prototype.toString.call([1,2,3]).slice(8 , -1)) //object [object Array] Array
+        // 手写类型识别函数
         function getType(value){
-            // 对于null要添加一个特殊的检查
+            // 1、对特殊值null进行判断
             if(value === null){
-                return value + "";
+                return value;
             }
-            // 分两个方面：直接使用typeof和使用Object.prototype.toString.call
-            // 如果是值类型：、
-            if(typeof value !== 'object'){//小写
+            // 2、对普通数据结构进行判断
+            if(typeof value !== 'object'){
                 return typeof value;
             }else {
-                // 如果是对象，就要使用Object.prototype.toString.call
-                const valueContext = Object.prototype.toString.call(value).slice(8 , -1).toLowerCase();
-                return valueContext;
+                return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();
             }
         }
-        console.log(getType(2)); // "number"
-        console.log(getType([1,2,3])); // "Array"
-        console.log(getType(null)); // "Null"
-        // 其他测试
-        console.log(getType({})); // "Object"
-        console.log(getType(function(){})); // "Function"？BNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
-        console.log(getType(/regex/)); // "RegExp"
-        console.log(getType(new Date())); // "Date"
+        console.log('测试')
+       console.log(getType(null));      // "null"
+console.log(getType(42));        // "number"
+console.log(getType("hello"));   // "string"
+console.log(getType(true));      // "boolean"
+console.log(getType(undefined)); // "undefined"
+console.log(getType(() => {}));  // "function"
+console.log(getType(Symbol()));  // "symbol"
+console.log(getType([1, 2, 3])); // "array"
+console.log(getType({}));        // "object"
+console.log(getType(new Date())); // "date"
+console.log(getType(/a/g));      // "regexp"
+
+
+
 
     </script>
 

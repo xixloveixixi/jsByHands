@@ -41,22 +41,43 @@
         //     return res;
         // }
 
-        Function.prototype.myCall = function (obj , ...args){
-            // 判断this是否为函数，只有函数才可以进行后面的调用
-            if(typeof this !== 'function'){
-                throw new TypeError("this not a function")
+        // Function.prototype.myCall = function (obj , ...args){
+        //     // 判断this是否为函数，只有函数才可以进行后面的调用
+        //     if(typeof this !== 'function'){
+        //         throw new TypeError("this not a function")
+        //     }
+        //     // 当obj为null或者undefied的时候obj是globalThis,其他都是对象
+        //     obj = (obj === null || obj === undefied ) ? globalThis : Object(obj);
+        //     // 大致的结构就是改变this指向加执行函数
+        //     // 我们最开始是直接添加一个fn的属性，但是我们是通用的，很有可能属性会相同
+        //     // 我们使用 es6的symbol：Symbol 来避免属性名冲突
+        //     const key = Symbol('temp');
+        //     obj[key] = this;
+        //     // 当存在值的时候，要接收
+        //     const res = obj[key](...args);
+        //     delete obj[key];
+        //     return res;
+        // }
+        //  !箭头函数没有this
+        Function.prototype.myCall = function(context){
+            // 1、判断参数类型
+            if(typeof this !=="function"){
+                throw new Error('类型错误');
             }
-            // 当obj为null或者undefied的时候obj是globalThis,其他都是对象
-            obj = (obj === null || obj === undefied ) ? globalThis : Object(obj);
-            // 大致的结构就是改变this指向加执行函数
-            // 我们最开始是直接添加一个fn的属性，但是我们是通用的，很有可能属性会相同
-            // 我们使用 es6的symbol：Symbol 来避免属性名冲突
-            const key = Symbol('temp');
-            obj[key] = this;
-            // 当存在值的时候，要接收
-            const res = obj[key](...args);
-            delete obj[key];
+            // 2、判断context是否传入
+            context = context || window;
+            // 3、获取参数
+            const args = [...arguments].slice(1);
+            // 4、新增一个属性
+            const key =Symbol('temp');
+            context[key] = this;
+            // 5、执行
+            const res = context[key](...args);
+            // 6、删除属性
+            delete context[key];
             return res;
+
+
         }
         test.myCall({} , 1 , 2);
 

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 1、字符串翻转
+        String.prototype.myReserve = function () {
+            let str = this;
+            let newStr = '';
+            for (let i = str.length - 1; i >= 0; i--) {
+                newStr += str[i];
+            }
+            return newStr;
+        }
+        let str = 'abc';
+        console.log(str.myReserve())
+        // 2、new
+        // new Object()
+        function myNew(constructor, ...args) {
+            let newObj = Object.create(constructor.prototype);
+            let res = constructor.apply(newObj, args);
+            return typeof res === "object" ? res : newObj;
+        }
+        console.log(new Object({
+            name: 'jyx',
+            age: 18
+        }))
+        console.log(myNew(Object, {
+            name: 'jyx',
+            age: 18
+        }))
+        // 3、解析url
+        let url = 'http://www.domain.com/?user=anonymous&id=123&id=456&city=%E5%8C%97%E4%BA%AC&enabled';
+        console.log(parseParam(url));
+        function parseParam(url) {
+            let param = url.split('?')[1];
+            let pairParam = param.split('&');
+            let paramMap = new Map();
+            pairParam.forEach(ele => {
+               if(/=/.test(ele)){
+                 let [key, value] = ele.split('=');
+                let decodeKey = decodeURIComponent(key);
+                let decodeVal = decodeURIComponent(value);
+                if (paramMap.has(decodeKey)) {
+                    let exParam = paramMap.get(decodeKey);
+                    if (Array.isArray(exParam)) {
+                        exParam.push(decodeVal);
+                    } else {
+                        paramMap.set(decodeKey , [decodeVal , exParam]);
+                    }
+                }else {
+                        paramMap.set(decodeKey , decodeVal);
+
+                }
+               }else {
+                let key = ele.split('=');
+                let decodeKey = decodeURIComponent(key);
+                paramMap.set(decodeKey , true);
+               }
+
+            });
+            let ans = [];
+            for(let [key , value] of paramMap){
+                ans[key] = value;
+            }
+            return ans;
+
+        }
+        // 4、移除小孩
+        function childrenNum(num , count){
+            let childrenArr = [];
+            let index = 0 ;
+            for(let i = 0 ; i < num ; i++){
+                childrenArr[i] = i+ 1;
+            }
+            while(childrenArr.length > 1){
+                index = (index + 2) % childrenArr.length;
+                childrenArr.splice(index , 1);
+            }
+            return childrenArr[0];
+        }
+        let num = childrenNum(30 , 3);
+        console.log(num);
+        // 5、发布订阅模式
+        class PubSub{
+            constructor(){
+                this.events = [];
+            }
+            // 订阅：添加到watch当中
+            subscribe(topic , callbacks){
+                if(!this.events[topic]) return ;
+                this.events[topic].push(callbacks);
+                // 释放一些资源一面内存泄漏
+                return () => unsubscribe(topic , callbacks);
+            }
+            unsubscribe(topic , callbacks){
+                if(!this.events[topic]) return ;
+                let index = this.events.indexOf(callbacks);
+                if(index === -1) return ;
+                this.events.splice(index , 1);
+            }
+            // 更新
+            publish(topic , data , context){
+                const subscribe = [...this.events[topic]];
+                subscribe.forEach((callbacks) => {
+                    try{
+                        let result = callbacks(data , context);g
+                        if(result instanceof Promise){
+                            result.catch(error => console.error(error));
+                        }
+                    }catch(error){
+                        console.error(error);
+                    }
+                })
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>

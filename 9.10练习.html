@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9.10练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、数组的push
+        Array.prototype.myPush = function () {
+            for (let i = 0; i < arguments.length; i++) {
+                this[this.length] = arguments[i];
+            }
+            return this.length;
+        }
+        let arr = [1, 2, 3, 4, 5];
+        arr.myPush(6);
+        console.log(arr);
+        // 2、instanceOf
+        function myInstanceOf(val, comVal) {
+            // 判断原型链
+            if (typeof val !== "object" || val === null) {
+                throw new TypeError('类型错误');
+            }
+            let curPrototype = val.__proto__;
+            while (curPrototype !== null) {
+                if (comVal.prototype === curPrototype) {
+                    return true;
+                }
+                curPrototype = curPrototype.__proto__;
+            }
+
+            return false;
+
+        }
+        console.log(arr instanceof Array);
+        console.log(myInstanceOf(arr, Array));
+        // 3、实现非负大整数相加
+        function sumBigNumber(a, b) {
+            a = a.split('');
+            b = b.split('');
+            let temp = 0;
+            let ans = '';
+            while (a.length || b.length || temp) {
+                temp += ~~a.pop() + ~~b.pop();
+                ans = (temp % 10) + ans;
+                temp = temp > 9 ? 1 : 0;
+            }
+            return ans.replace(/^0+$/, '0') || '0';
+        }
+        console.log(sumBigNumber("123", "456"));      // 579
+        console.log(sumBigNumber("999", "1"));        // 1000
+        console.log(sumBigNumber("0", "0"));          // 0
+        console.log(sumBigNumber("000", "000"));      // 0
+        console.log(sumBigNumber("10000000000000000000", "1")); // 10000000000000000001
+        console.log(sumBigNumber("99999999999999999999", "1")); // 100000000000000000000
+        // 4、createObject
+        function createObject(val) {
+            function F() { };
+            F.prototype = val;
+            return new F();
+        }
+        console.log(createObject(Array))
+        // 5、js转换为树结构
+        source = [{
+            id: 1,
+            pid: 0,
+            name: 'body'
+        }, {
+            id: 2,
+            pid: 1,
+            name: 'title'
+        }, {
+            id: 3,
+            pid: 2,
+            name: 'div'
+        }]
+        function changeTree(tree) {
+            function mapTree(nodes, pid = 0) {
+                return nodes.filter(ele => ele.pid === pid)
+                    .map((ele) => ({
+                        ...ele,
+                        children: mapTree(nodes, ele.id)
+                    }))
+            }
+            return mapTree(tree, 0);
+        }
+        const newTree = changeTree(source);
+        console.log(newTree);
+        //   6、es5和es6求函数参数的和
+        // es5:
+        function sumES5() {
+            let res = 0;
+            for (let i = 0; i < arguments.length; i++) {
+                res += arguments[i];
+            }
+            return res;
+        }
+        console.log(sumES5(1, 2, 3, 4)); // 应该输出: 10
+        console.log(sumES5(10, 20));     // 应该输出: 30
+        console.log(sumES5(-1, -2, -3)); // 应该输出: -6
+        console.log(sumES5());           // 应该输出: 0
+        function sumES6(...rest) {
+            return rest.reduce((total, prev) => total + prev , 0);
+        }
+        console.log(sumES6(1, 2, 3, 4));       // 应该输出: 10
+        console.log(sumES6(10, 20));           // 应该输出: 30
+        console.log(sumES6(-1, -2, -3));       // 应该输出: -6
+        console.log(sumES6());                 // 应该输出: 0
+
+
+    </script>
+
+</body>
+
+</html>

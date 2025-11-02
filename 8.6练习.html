@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.6练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、类型判断函数
+        // ai：一个旨在判断类型的函数，却因为一个愚蠢的变量名错误而无法判断类型，
+        // 其设计逻辑也暴露了对 JavaScript 类型系统的认知盲区。它更像是一个“半成品”的失败尝试。
+        // 在 JavaScript 中，typeof function() {} 返回的是 "function"，而不是 "object"。
+        function getType(value) {
+            // if(value === null){
+            //     return null;
+            // }
+            // if(typeof value !=="object" && typeof value !=="function"){
+            //     return typeof value;
+            // }else {
+            //     return Object.prototype.toString.call(value).slice(8 , -1);//愚蠢的变量名错误
+            // }
+            return Object.prototype.toString.call(value).slice(8, -1).toLowerCase();//愚蠢的变量名错误
+
+        }
+        // 你通过一次次的迭代和反思，最终将一个有缺陷的函数打磨成了一个高质量的、值得信赖的工具。这个过程比最终的结果本身更有价值。你已经深刻理解了 “简单胜于复杂” (Simple is better than complex) 这一编程哲学的精髓。做得非常棒！
+        const obj = {
+            name: 'jyx',
+            age: 18
+        }
+        getType(obj);
+        // 2、手写ajax
+        function myAjax() {//一个“自说自话”的无效请求
+            const SERVER_URL = '/server';
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", SERVER_URL, true);
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== 4) {
+                    return;//这个 false 返回给谁了？谁会接收它？答案是：没有人。XMLHttpRequest 的回调函数是事件驱动的，它们的返回值没有意义。这行代码纯粹是无用的“僵尸代码”，
+                }
+                if (xhr.status === 200) {
+                    console.log(xhr.response);
+                } else {
+                    xhr.onerror(xhr.statusText);
+                }
+            }
+            xhr.onerror = function (err) { // 或者使用箭头函数 xhr.onerror = (err) => {
+                console.log("请求失败:", err);
+            };
+            xhr.setRequestHeader("accept", "/application");
+            xhr.responseType = 'json';
+            xhr.send();
+        }
+        // 3、手写浅拷贝
+        function copy(obj) {
+            if (typeof obj !== "object") {
+                throw TypeError("类型错误");
+            }
+            const newObj = Array.isArray(obj) ? [] : {};
+            for (let key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    newObj[key] = obj[key];
+                }
+            }
+            return newObj;
+
+        }
+        console.log(copy(obj));
+        // 4、深拷贝 是对象就哟啊遍历
+        function deepCopy(obj){
+            if(!obj || typeof obj !=="object"){
+                throw TypeError("类型错误或者对象为空");
+            }
+            const newDeepObj = Array.isArray(obj) ? [] : {};
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newDeepObj[key] = typeof obj[key] ==="object" ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newDeepObj;
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.12练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、手写柯里化
+        function currying (func) {
+            return function curried(...args){
+                // 如果收集的参数是足够的->直接执行
+                if(args.length >= func.length){
+                    return func.apply(null , args);
+                }
+                  return function(...newArgs){
+                      // 收集的参数还不足->继续收集参数
+                   return curried.apply(null , args.concat(newArgs))
+                  }
+                
+
+            }
+
+        }
+        function sum(a, b, c) {
+            return a + b + c;
+        }
+        let curriedSum = currying(sum);
+        console.log(curriedSum(4)(6)(7)); // 输出 15
+        console.log(curriedSum(7, 8, 9)); // 输出 24
+        // 总结:柯里化（Currying）是函数式编程中的核心概念
+        // 指将原本接收多个参数的函数转化为一系列仅接收单个参数的嵌套函数的技术。以下是关于柯里化的详细介绍：
+        // 柯里化接收一个函数,返回一个函数,是一个接收单个参数的嵌套函数
+        // 我的思路:肯定先返回一个函数,在函数里面类似递归吧,终止的条件就是接收的参数大于等于函数的参数
+        // 就会返回一个结果,这个结果是apply加函数
+        // 那如果收集到的参数不大于呢?那我们就继续收集函数
+        // 2、手写深拷贝
+        function deepCopy(obj){
+            if(typeof obj !=="object"){
+                return obj;
+            }
+            const newObj = Array.isArray(obj) ? [] : {};
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newObj[key] = typeof obj[key] ==="object" ? deepCopy(obj[key]) : obj[key];
+                }
+            }
+            return newObj;
+        }
+        const obj = {
+            name : "jyx" , 
+            ags : 18 ,
+            sayHi  : function(){
+                console.log(`hi,my name is ${this.name}`)
+            }
+        }
+        const newObj = deepCopy(obj);
+        newObj.name = "hcy";
+        newObj.sayHi();
+        obj.sayHi();
+        // 3、数组乱序化
+        function randomArr(arr){
+            if(!Array.isArray(arr)){
+                return arr;
+            }
+            let len = arr.length;
+            // while(len){
+            //     let randomNum = Math.floor(Math.random() * len);
+            //     len--;
+            //     console.log(randomNum);
+            //     let temp = arr[len];
+            //     arr[len] = randomNum;
+            //     randomNum = temp;
+            // }
+            for(let i = 0 ; i < len ; i++){
+                 let randomNum = Math.floor(Math.random() * len--);
+                console.log(randomNum);
+                let temp = arr[len];
+                arr[len] = arr[randomNum];
+                arr[randomNum] = temp;
+            }
+            return arr;
+
+        }
+        console.log(randomArr([1,2,3]))
+        // 4、数组扁平化
+        function flatter(arr){
+            let len = arr.length ;
+            let newArr = [];
+            for(let i = 0 ; i < len ; i++){
+                if(Array.isArray(arr[i])){
+                    newArr = flatter(newArr.concat(arr[i]));
+                }else {
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+        }
+        console.log(flatter([1,[2,3,[4,5,6]]]))
+        // 5、实现数组去重
+        const array = [1, 2, 3, 5, 1, 5, 9, 1, 2, 8];
+        console.log(Array.from(new Set(array)));
+    </script>
+</body>
+
+</html>

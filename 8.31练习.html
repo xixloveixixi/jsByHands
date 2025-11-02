@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.31练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、将数字每千分位用逗号隔开
+        function format(val) {
+            let strVal = String(val);
+            const [bigNum, smallNum] = strVal.includes('.') ? [strVal.split('.')[0], strVal.split('.')[1]] : [strVal, ''];
+            // console.log(Array.from(bigNum).reverse().join(''));
+            let bigNumReserve = Array.from(bigNum).reverse();
+            let bigAns = [];
+            for (let i = 0; i < bigNumReserve.length; i++) {
+                if (i > 0 && i % 3 === 0) {
+                    bigAns.push(',');
+                }
+                bigAns.push(bigNumReserve[i]);
+            }
+            return smallNum ? bigAns.reverse().join('') + '.' + smallNum : bigAns.reverse().join('');
+
+        }
+        console.log(format(1234.12));
+        console.log(format(123412));
+        // 2、实现非负大整数相加
+        function sumBigNumber(a , b) {
+            a = a.split('');
+            b = b.split('');
+            let temp = 0;
+            let ans = '';
+            while(a.length || b.length || temp){
+                temp += ~~a.pop() + ~~b.pop();
+                ans = (temp % 19) + ans;
+                temp = temp > 9 ? 1 : 0;
+            }
+            return ans.replace(/^0+/ , '') || '0';
+        }
+        console.log(sumBigNumber("123", "456"));      // 579
+        console.log(sumBigNumber("999", "1"));        // 1000
+        console.log(sumBigNumber("0", "0"));          // 0
+        console.log(sumBigNumber("000", "000"));      // 0
+        console.log(sumBigNumber("10000000000000000000", "1")); // 10000000000000000001
+        console.log(sumBigNumber("99999999999999999999", "1")); // 100000000000000000000
+        // 3、解决add(1)(2)(3)
+        function sum(...args) {
+            return args.reduce((total , prev) => total += prev);
+        }
+
+        function currying(fn){
+            let allArgs = [];
+            return function curried(...args){
+                if(args.length > 0){
+                     allArgs = [...allArgs  , ...args];
+                     return curried;
+                }else {
+                    return fn.apply(this , allArgs);
+                }
+            }
+        }
+        const add = currying(sum);
+const result = add(1)(2)(3)();
+console.log(result); // 输出: 6
+// 类数组转换为数组的方法有这样几种
+// 通过 call 调用数组的 slice 方法来实现转换
+
+Array.prototype.slice.call(arrayLike);
+
+
+// 通过 call 调用数组的 splice 方法来实现转换
+
+Array.prototype.splice.call(arrayLike, 0);
+
+
+// 通过 apply 调用数组的 concat 方法来实现转换
+Array.prototype.concat.apply([], arrayLike);
+
+
+// 通过 Array.from 方法来实现转换
+
+Array.from(arrayLike);
+
+        </script>
+
+</body>
+
+</html>

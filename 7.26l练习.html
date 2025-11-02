@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7.26手写代码练习</title>
+</head>
+<body>
+    <script>
+        // 1、手写instanceof
+
+        console.log([1,2,3] instanceof Array);
+       function myInstanceOf(obj , compareObj){
+        if(obj === null || typeof obj !== 'obejct'){//必须是obj，否则Object.getPrototypeOf会报错
+            return false;
+        }
+        let curPrototype = Object.getPrototypeOf(obj);
+        while(curPrototype != null){
+            if(curPrototype === compareObj.prototype){
+                return true;
+            }
+            curPrototype =  Object.getPrototypeOf(curPrototype);
+        }
+        return false;
+       }
+
+    //    2、手写节流函数
+    function throttle(fn , delay){
+        let curDate = 0;
+        return function(){
+            let nowDate = Date.now();
+            const context = this;
+            const args = arguments;
+            if(nowDate - curDate >= delay){
+                fn.apply(context , args);
+                curDate = nowDate;
+            }
+        }
+    }
+Function.prototype.myCall = function(context) {
+
+
+
+    
+
+};
+    // 3、call函数
+    // Function.prototype.myCall = function(context){
+    //     // 1、判断
+    //     if(typeof this != 'function'){
+    //         throw new TypeError('类型错误')
+    //     }
+    //     context = context || window;
+    //     const ags =Array.from(arguments).slice(1);
+    //     let key = Symbol('temp');
+    //     context[key] = this;
+    //     const res = context[key](...ags);
+    //     delete context[key]
+    //     return res;
+    // }
+    Function.prototype.myCall = function(context){
+        if(typeof this !== 'function'){
+            throw new TypeError('类型错误');
+        }
+        context = context || window;
+        let key = Symbol('temp');
+        context[key] = this;
+        const args = Array.from(arguments).slice(1);
+        const res = context[key](...args);
+        delete(context[key]);
+        return res;
+
+    }
+
+
+    // 4、手写apply:可能不会传入参数
+    Function.prototype.myApply = function(context){
+        if(typeof this !== 'function'){
+            throw new TypeError('类型错误');
+        }
+
+        context = context || window;
+        const key = Symbol('temp');
+        context[key] = this;
+        let res;
+        const args = Array.from(arguments).slice(1);
+        if(args.length > 0){
+            res = context[key](...args);
+        }else {
+            res = context[key]();
+        }
+        return res;
+
+    }
+    </script>
+</body>
+</html>

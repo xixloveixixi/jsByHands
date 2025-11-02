@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7.30练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、promise:微任务、使用闭包，箭头函数
+        class Promise {
+            static PENDING = '待定'
+            static FULFILLED = '成功'
+            static REJECTED = '失败'
+
+            constructor(fn) {
+                this.status = Promise.PENDING;
+                this.result = null;
+                this.resolveCallbacks = [];
+                this.rejectCallbacks = [];
+
+                try {
+                    fn(resolve, reject);
+                } catch (err) {
+                    this.reject(err);
+                }
+
+                const resolve = (result) => {
+                    if (this.status === Promise.PENDING) {
+                        this.status = Promise.FULFILLED;
+                        this.result = result;
+                        queueMicrotask(() => {
+                            this.resolveCallbacks.forEach((fn) => {
+                                fn(result);
+                            })
+                        })
+                    }
+
+
+                }
+                const reject = (result) => {
+                    if (this.status === Promise.PENDING) {
+                        this.status = Promise.REJECTED;
+                        this.result = result;
+                        queueMicrotask(() => {
+                            this.rejectCallbacks.forEach((fn) => {
+                                fn(result);
+                            })
+                        })
+                    }
+                }
+            }
+        }
+        // 2、节流函数
+        function throttle(fn, delay) {
+            let lastDate = 0;
+            return function () {
+                let nowDate = Date.now();
+                if (nowDate - lastDate >= delay) {
+                    const context = this;
+                    const args = arguments;
+                    fn.apply(context, args);
+                }
+            }
+
+        }
+        // 3、手写apply函数 问题：没有删除属性，应该使用...扩展运算符
+        Function.prototype.myApply = function (context, args) {
+            if (typeof this !== 'function') {
+                throw new TypeError('类型错误')
+            }
+            context = context || window;
+            const key = Symbol('temp');
+            context[key] = this;
+            const res = context[key](...args);
+            delete context[key];
+            return res;
+        }
+        // bind 函数实现
+
+        // 4、bind
+        Function.prototype.myBind = function (context) {
+            if (typeof this !== 'function') {
+                throw new TypeError('类型错误')
+            }
+            let args = [...arguments].slice(1);
+            let fn = this;
+            return function Fn() {
+                return fn.apply(
+                    this instanceof Fn ? this : context,
+                    args.concat(...arguments)
+                )
+            }
+        }
+        // bind的使用
+        const person = {
+            name: '张三',
+            greet: function (greeting, punctuation) {
+                console.log(`${greeting}, 我是 ${this.name}${punctuation}`);
+            }
+        };
+
+        const anotherPerson = {
+            name: '李四'
+        };
+
+        // 1. 直接调用，this 指向 person
+        person.greet('你好', '!'); // 输出: 你好, 我是 张三!
+
+        // 2. 将方法赋值给一个变量，然后调用
+        const sayHello = person.greet;
+        sayHello('嗨', '~'); // 输出: 嗨, 我是 undefined~ 
+        // 因为 sayHello 是一个全局函数调用，this 指向全局对象（在浏览器中是 window），而 window 没有 name 属性。
+
+        // 3. 使用 bind 修复 this 指向
+        // const boundGreet = person.greet.bind(anotherPerson);
+
+        // 现在调用 boundGreet，无论在哪里调用，this 都会指向 anotherPerson
+        // const boundGreet = person.greet.myBind(anotherPerson);
+        // boundGreet('Hello', '!'); // 输出: Hello, 我是 李四!
+        // 正确测试 myApply
+        const result = person.greet.myApply(anotherPerson, ['Hello', '!']);
+        // 输出: Hello, 我是 李四!
+    </script>
+
+</body>
+
+</html>

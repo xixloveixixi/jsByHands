@@ -7,25 +7,13 @@
 </head>
 <body>
     <script>
-      function myObjectCreate(newObj , oldObj){
-        console.log(typeof newObj);
-        if(typeof newObj !== 'object' || newObj === null){
-            throw new Error('第一个参数必须是一个对象');
-        }
-
-        Object.setPrototypeOf(newObj , oldObj);
-        return newObj;
-
-      }
-
-        const person = {
-            name: 'John',
-            age: 30
-        };
-        const newObjbj = {};
-        const student = myObjectCreate(newObjbj, person);
-        student.grade = 'A';
-        console.log(null); // { grade: 'A' }
+    //   手写Object.create
+//    将传入的对象作为原型
+     function myCreate(protype){
+        function F(){};
+        F.prototype = protype;
+        return new F()
+         }
 
 
     </script>

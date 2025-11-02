@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>7.31练习</title>
+</head>
+
+<body>
+    <script>
+        // 2、call
+        Function.prototype.myCall = function (context) {
+            if (typeof this !== "function") {
+                throw new TypeError('类型错误');
+            }
+            const args = Array.of(...arguments).slice(1);
+            context = context || window;
+            const key = Symbol('temp');
+            context[key] = this;
+            const res = context[key](...args);
+            delete context[key];
+            return res;
+        }
+        function greet(a, b) {
+            return `${this.name}, ${a} and ${b}`;
+        }
+        const obj = { name: "Alice" };
+        console.log(greet.myCall(obj, "Bob", "Charlie")); // "Alice, Bob and Charlie"
+
+        // 3、柯里化
+        function curry(fn) {
+            return function curried(...args){
+                if(args.length >= fn.length){
+                    return fn(...args);
+                }else {
+                    return function(...nextArgs){
+                        return curried(...args , ...nextArgs);
+                    }
+                }
+
+            }
+        }
+        // 4、手写ajax请求
+        function myAjax(){
+            const SERVE_URL = '/serve';
+            // 1、新建一个request实例
+            const xhr = new XMLHttpRequest();
+            //2、 新建xhr请求方式
+            xhr.open("GET" , SERVE_URL , true);
+            // 3、设置监听
+            xhr.onreadystatechange = function(){
+                if(this.readyState !== 4){
+                    return ;
+                }
+                if(this.status === 200){
+                   console.log(this.response);
+                }else {
+                    console.error(this.statusText);
+                }
+            }
+            // 4、错误的情况
+            xhr.onerror = function(){
+                console.error(this.statusText);
+            }
+            // 5、设置请求头
+            xhr.setRequestHeader("Accept" , "application/json");
+            xhr.responseType = "json";
+            // 6、发送
+            xhr.send(null);
+        }
+    </script>
+
+</body>
+
+</html>

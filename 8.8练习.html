@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.8练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、createObject:将传入的对象作为原型
+        console.log(Object.create({
+            name: 'jyx',
+            age: 18
+        }))
+        console.log(myCreateObj({
+            name: 'hcy',
+            age: 18
+        }))
+        console.log(myCreateObj([1, 2, 3]))
+        function myCreateObj(proto) {
+            // const newObj = new Object();
+            // newObj.protype = prototye;//只是给新对象 newObj 添加了一个名叫 protype 的普通属
+            // return newObj;
+            // 使用Object.setPrototypeOf
+            const newObj ={};
+            Object.setPrototypeOf(newObj , proto);
+            return newObj;
+        }
+        function Father() {
+            this.name = 'father';
+            this.age = 18;
+            this.sayHi = function () {
+                console.log(`hi,我是${this.name},今年${this.age}`);
+            };
+        }
+
+        const f = new Father();
+        f.sayHi(); // 输出：hi,我是father,今年18
+        const son = {
+            name: 'son',
+            age: 18
+        }
+        // 2、手写apply函数
+        Function.prototype.myApply = function (context , args) {
+            // apply就是会传入一个数组
+            if(typeof this !=="function"){
+                throw new TypeError("类型错误");
+            }
+            context = context ?? window;
+            const key = Symbol('temp');
+            context[key] = this;
+            let res = null;
+            if(!args){
+               res = context[key]();
+            }else {
+               res = context[key](...args);
+            }
+            delete context[key];
+            return res;
+
+
+
+        }
+                f.sayHi.myApply(son)
+        // 3、手写浅拷贝
+        function copy(obj){
+            if(typeof obj !=="object"){
+                return obj;
+            }
+            const newObj = Array.isArray(obj) ? [] : {};
+            for(let key in obj){
+                if(obj.hasOwnProperty(key)){
+                    newObj[key] = obj[key];
+                }
+            }
+            return newObj;
+        }
+        console.log(copy(son));
+        // 4、日期格式化函数
+        console.log( dateFormat(new Date('2020-12-01'), 'yyyy/MM/dd') )
+        function dateFormat(time , format){
+            const year = time.getFullYear();
+            const month = time.getMonth() + 1 < 10 ? '0' + (time.getMonth() + 1) : time.getMonth() + 1;
+            const date = time.getDate() < 10 ? '0' +  time.getDate() :  time.getDate();
+            format = format.replace('yyyy' , year);
+            format = format.replace('MM' , month);
+            format = format.replace('dd' , date);
+            return format
+        }
+        // 5、 交换a,b的值，不能用临时变量
+        // a = 1 , b = 2  : a = 3 , b = a - b  = 1 , a = a - b 
+        // a = a + b ;
+        // b = a - b ;
+
+        function change(a , b){
+            a = a + b ;
+            b = a - b ;
+            a = a - b;
+            return [a , b];
+            
+        }
+        console.log(change(1 ,2))
+
+    </script>
+</body>
+
+</html>

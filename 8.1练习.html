@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.1练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、apply
+        Function.prototype.myApply = function (context) {
+            if (typeof this !== "function") {
+                throw new TypeError('类型错误')
+            }
+            context = context || window;
+            const args = [...arguments].slice(1);
+            const key = Symbol('temp');
+            context[key] = this;
+            let res = null;
+            if (args) {
+                res = context[key](...args);
+            } else {
+                res = context[key]();
+            }
+            delete context[key];
+            return res;
+        }
+        // 2、bind
+        Function.prototype.myBind = function (context) {
+            const self = this;
+            const args = [...arguments].slice(1);
+            context = context || window;
+            return function Fn() {
+                //解决与new的兼容性
+                return self.apply(
+                    // 判断this是否为一个函数
+                    this instanceof Fn ? this : context,
+                    // 进行参数的拼接
+                    args.concat(...arguments)
+                );
+            }
+        }
+        // 3、ajax
+        function myAjax() {
+            const SERVE_URL = '/serve';
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", SERVE_URL, true);
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== 4) {
+                    return;
+                }
+                if (this.status === 200) {
+                    console.log(this.response);
+                } else {
+                    console.error(this.statusText);
+                }
+            }
+            xhr.setRequestHeader("Accept", "application/json");
+            xhr.responseType = "json";
+            xhr.send();
+        }
+        // 4、promise封装ajax
+        function getUrl(url) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open("Get", url , true);
+                xhr.onreadystatechange = () => {
+                    if (this.readyState !== 4) {
+                        return;
+                    }
+                    if (this.status === 200) {
+                        resolve(this.response);
+                    } else {
+                        reject(new Error(this.statusText));
+                    }
+                }
+                xhr.onerror = () => {
+                    reject(new Error(this.statusText));
+                }
+                xhr.setRequestHeader("Accept" , "application/json");
+                xhr.responseType ="json";
+                xhr.send(null);
+            })
+        }
+    </script>
+
+</body>
+
+</html>

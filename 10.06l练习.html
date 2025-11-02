@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>19.06练习</title>
+</head>
+<body>
+    <script>
+        // 1、arr乱序化
+        let arr = [1,2,3,4,5];
+        function shuffle(arr){
+            // 进行交换
+            let len = arr.length;
+            for(let i = 0  ; i < len - 1  ; i++){
+                let random = Math.floor(Math.random() * len);
+                [arr[i] , arr[random]] = [arr[random] , arr[i]]
+                len-1;
+            }
+            return arr;
+
+        }
+        console.log(shuffle(arr));
+    </script>
+    
+</body>
+</html>

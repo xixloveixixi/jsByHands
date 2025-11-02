@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>730练习</title>
+</head>
+
+<body>
+    <script>
+        // 1、promise.then
+        class Promise {
+            static PENDING = '待定'
+            static FULFILLED = '成功'
+            static REJECTED = '失败'
+
+            constructor(fn) {
+                this.status = Promise.PENDING;
+                this.result = null;
+                this.resolveCallbacks = [];
+                this.rejectCallbacks = [];
+
+                try {
+                    fn(resolve, reject);
+                } catch (err) {
+                    this.reject(err);
+                }
+
+                const resolve = (result) => {
+                    if (this.status === Promise.PENDING) {
+                        this.status = Promise.FULFILLED;
+                        this.result = result;
+                        queueMicrotask(() => {
+                            this.resolveCallbacks.forEach((fn) => {
+                                fn(result);
+                            })
+                        })
+                    }
+                }
+                const reject = (result) => {
+                    if (this.status === Promise.PENDING) {
+                        this.status = Promise.REJECTED;
+                        this.result = result;
+                        queueMicrotask(() => {
+                            this.rejectCallbacks.forEach((fn) => {
+                                fn(result);
+                            })
+                        })
+                    }
+                }
+            }
+            then(onFulfilled, onRejected) {
+                onFulfilled = typeof onFulfilled === "function" ? onFulfilled : value => value;
+                onRejected = typeof onRejected === "function" ? onRejected : reason => { throw reason };
+                const self = this;
+                return new Promise((resolve, reject) => {
+                    //异步执行
+                    const handelBacks = (backs, result) => {
+                        queueMicrotask(() => {
+                            try {
+                                const res = backs(result);
+                                res instanceof Promise ? res.then(resolve, reject) : resolve(res);
+                            } catch (err) {
+                                reject(err);
+                            }
+                        })
+                    }
+                    switch (self.status) {
+                        case Promise.PENDING: {
+                            self.resolveCallbacks.push(() => handelBacks(onFulfilled, self.result));
+                            self.rejectCallbacks.push(() => handelBacks(onRejected, self.result));
+                            break;
+                        }
+                        case Promise.FULFILLED: {
+                            handelBacks(onFulfilled, self.result);
+                            break;
+                        }
+                        case Promise.REJECTED: {
+                            handelBacks(onRejected, self.result);
+                            break;
+                        }
+                    }
+
+                })
+            }
+            all(promises) {
+                return new Promise((resolve, reject) => {
+                    let len = promises.length;
+                    let count = 0;
+                    let resultArr = new Array(len);//注意初始化方式
+                    if (len === 0) {
+                        resolve(resultArr);
+                        return;
+                    }
+                    for (let i = 0; i < len; i++) {
+                        Promise.resolve(//确保每个元素都是 Promise
+                            promises[i]
+                                .then(val => {
+                                    count++;
+                                    resultArr[i] = val;
+                                    if(len === count){
+                                        resolve(resultArr)
+                                    }
+                                }
+                                )
+                        )
+                        .catch(reject);
+                    }
+
+                })
+            }
+        }
+        // 2、类型判断函数
+        function isInstanceOf(newObj, compareObj) {
+            if (typeof newObj !== "object" || newObj === null) {
+                return false;
+            }
+            let prototype = newObj.__proto__;
+            while (prototype !== null) {
+                if (prototype === Object.getPrototypeOf(compareObj)) {
+                    return true;
+                }
+                prototype = prototype.__proto__;
+            }
+            return false;
+
+        }
+        // 3、手写bind函数
+        Function.prototype.myBind = function (context) {
+            if (typeof this !== "function") {
+                throw new TypeError('类型错误');
+            }
+            const fn = this;
+            const args = [...arguments].slice(1);
+            // 注意new 的调用
+            const boundFn = function (newArgs) {
+                const thisArgs = this instanceof boundFn ? this : context;
+                const params = [...args, ...newArgs];
+                return fn.apply(thisArgs, params);
+
+            }
+            // 修复原型链丢失的问题
+            boundFn.prototype = Object.create(fn.prototype);
+            return boundFn;
+        }
+        // 4、柯里化
+        // 函数柯里化指的是一种将使用多个参数的一个函数转换成一系列使用一个参数的函数的技术。
+        // 核心问题：什么时候该最终执行，什么时候该继续返回新函数
+        // 什么时候函数执行？搜集到的参数足够多
+        // 什么时候继续返回新函数：搜救参数还不够多
+        // 怎么返回新函数？bind:可以返回一个函数，也可以使用箭头函数
+        function curry(fn, args) {
+            let len = fn.length;
+            let args = args || [];
+            // 返回的是一个函数
+            return function () {
+                let subArgs = args.slice(0);
+                // 拼接得到现有的所有参数
+                for (let i = 0; i < arguments.length; i++) {
+                    subArgs.push(arguments[i]);
+                }
+                if (subArgs.length >= len) {
+                    return fn.apply(this, subArgs);
+                } else {
+                    // 如果不满足，递归返回柯里化的函数，等待参数的传入
+                    return curry.call(this, fn, subArgs);
+
+                }
+            }
+
+
+        }
+        function curry(fn, args) {
+            return args.length >= fn.length ? fn(...args) : curry.bind(null, fn, ...args);
+        }
+
+
+    </script>
+
+</body>
+
+</html>

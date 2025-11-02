@@ -7,18 +7,19 @@
 </head>
 <body>
     <script>
-        function myInstanceOf(constructor , obj){
-            let curPrototype = Object.getPrototypeOf(obj);
-            while(curPrototype !== null){
-                if(curPrototype === constructor.prototype){
-                    return true;
-                }
-                curPrototype = Object.getPrototypeOf(curPrototype);
-
-            }
-            return false;
-            
+       function myInstancecOf(newObj , obj){
+        if(typeof newObj !== 'object' || typeof newObj === null){
+            return ;
         }
+        let curPrototype = newObj.__proto__;
+        while(curPrototype !== null){
+            if(curPrototype === obj.prototype){
+                return true;
+            }
+            curPrototype = curPrototype.__proto__;
+        }
+        return false;
+       }
     </script>
     
 </body>

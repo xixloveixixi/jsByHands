@@ -120,9 +120,9 @@ new就是新建一个对象，new的过程主要有四个
     console.log(new Person('lily' , 19))
     console.log(myNew(Person , 'lily' , 19))
     console.log(myNew(Array , 1,2,3))
+    
 
-
-
+总结：new的手写主要通过它实现的四个步骤进行一一实现，创建一个原型被设置为构造函数的 prototype 属性的对象，改变this的指向，判断新对象的类型最后进行对应的处理。
 总结：new的手写主要通过它实现的四个步骤进行一一实现，创建一个原型被设置为构造函数的 prototype 属性的对象，改变this的指向，判断新对象的类型最后进行对应的处理。
 
 4、手写promise
@@ -208,8 +208,8 @@ promise原生代码：
                 }
             }
         }
-    
 
+(2).this指向
 (2).this指向
 
 但是我们测试发现了问题：
@@ -250,7 +250,7 @@ Cannot read properties of undefined (reading 'status')：this已经跟丢了
               console.log(error);
             }
           )
-
+    
             then(onFULFILLED , onREJECTED){
                 // 判断状态
                 if(this.status === Commitment.FULFILLED){
@@ -309,7 +309,7 @@ Cannot read properties of undefined (reading 'status')：this已经跟丢了
     promise自己写.html:57 Uncaught TypeError: onFULFILLED is not a function
         at Commitment.then (promise自己写.html:57:17)
         at promise自己写.html:72:13
-
+    
             // then方法:传入两个参数，一个是成功的回调，一个是失败的回调
             // 但是还要判断条件
             then(onFULFILLED , onREJECTED){
@@ -370,7 +370,7 @@ resolve是异步的，then也是调用的
             }
           )
           console.log("第三步");
-
+    
     第一步
     第二步
     第三步
@@ -394,7 +394,7 @@ resolve是异步的，then也是调用的
            error => { console.log("失败:", error.message); } // 失败回调（可选）
         )
         console.log("第三步");
-
+    
     第一步
     第二步
     第三步
@@ -604,8 +604,8 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
             }).catch((error) => {
                 console.error(error);
             });
-    
 
+因为p1是有setTimeout的，所以p1会在1秒后执行，而p2是立即执行的，所以p1和p2的结果会在1秒后一起输出。但是我们使用了 Promise.all，所以它会等待所有的 Promise 都完成后再执行 then 方法。这就是为什么结果是 ['p1 resolved', 'p2 resolved']，而不是 ['p2 resolved', 'p1 resolved']。
 因为p1是有setTimeout的，所以p1会在1秒后执行，而p2是立即执行的，所以p1和p2的结果会在1秒后一起输出。但是我们使用了 Promise.all，所以它会等待所有的 Promise 都完成后再执行 then 方法。这就是为什么结果是 ['p1 resolved', 'p2 resolved']，而不是 ['p2 resolved', 'p1 resolved']。
 
 开始手写：
@@ -642,13 +642,13 @@ all主要用来解决多个异步操作的调用问题，类似于Promise.all的
                     addData(i , cur);
                   }
                 }
-    
+        
               })
-    
-    
-            }
-    
 
+
+            }
+
+总结一下：promise.all方法主要是处理多个异步的调用问题，传入一个数组，返回的是新的promise对象，它是静态方式。所以传入数组后我们循环遍历了这个数组，如果它是普通值，如果是就要直接添加到结果数组里卖弄，如果不是，then等待结果，只要有一个错误，那么就直接reject，最后当结果数组的长度和传入数组的长度相同的时候就要resolve啦~~
 总结一下：promise.all方法主要是处理多个异步的调用问题，传入一个数组，返回的是新的promise对象，它是静态方式。所以传入数组后我们循环遍历了这个数组，如果它是普通值，如果是就要直接添加到结果数组里卖弄，如果不是，then等待结果，只要有一个错误，那么就直接reject，最后当结果数组的长度和传入数组的长度相同的时候就要resolve啦~~
 
 6、promise.race
@@ -671,8 +671,8 @@ Promise.race() 静态方法接受一个 promise 可迭代对象作为输入，�
           Promise.race([p1, p2]).then((value) => {
             console.log(value); //p1
           });
-    
 
+手写promise.race：
 手写promise.race：
 
 - 输入可迭代的数组
@@ -711,8 +711,8 @@ Promise.race() 静态方法接受一个 promise 可迭代对象作为输入，�
     
             })
             }
-    
 
+7、手写防抖函数
 7、手写防抖函数
 
 什么是防抖函数？举个例子！
@@ -746,7 +746,7 @@ Promise.race() 静态方法接受一个 promise 可迭代对象作为输入，�
             }
     
 
-
+8、节流函数
 8、节流函数
 
 什么是节流函数？
@@ -773,8 +773,8 @@ Promise.race() 静态方法接受一个 promise 可迭代对象作为输入，�
                 }
             };
         }
-    
 
+=======
 =======
 
 ##   9、手写类型判断函数
@@ -841,4 +841,186 @@ Promise.race() 静态方法接受一个 promise 可迭代对象作为输入，�
 - `Object.prototype.toString` 直接调用时，`this` 默认指向 `Object.prototype`，因此返回 `"[object Object]"`。
 - `Object.prototype.toString.call(value)` 使用 `call` 方法调用时，可以显式地指定 `this` 的值为 `value`，因此返回 `value` 的字符串表示。
 
+
+# 手写promise深度解析
+
+## 1、状态管理
+
+Promise 的核心是状态管理。一个 Promise 可以处于以下三种状态之一：
+
+- **Pending（待定）**：初始状态，既没有被 fulfilled 也没有被 rejected。
+- **Fulfilled（成功）**：操作成功完成。
+- **Rejected（失败）**：操作失败。
+
+所以在手写promise的时候我们应该定义这些状态：
+
+```
+ // 1.定义状态
+  static PENDING = 'pending';
+  static FULFILLED = 'fulfilled';
+  static REJECTED = 'rejected';
+```
+
+## 2. 构造函数初始化
+
+Promise 的构造函数接收一个执行器函数（executor），该函数有两个参数：resolve 和 reject。执行器函数立即执行，并可以调用 resolve 或 reject 来改变 Promise 的状态。在构造函数当中也要初始化当前 Promise 的状态、存储 Promise 的结果、存储在 Promise 成功时需要执行的回调函数、存储在 Promise 失败时需要执行的回调函数
+
+```
+constructor(func) {
+    this.status = Promise.PENDING;
+    this.result = null;
+    this.resolveCallbacks = [];
+    this.rejectCallbacks = [];
+
+    try {
+      func(this.resolve.bind(this), this.reject.bind(this));
+    } catch (error) {
+      this.reject(error);
+    }
+  }
+```
+
+注意：
+
+执行的时候要使用bind绑定this
+
+## 3. resolve 和 reject 方法
+
+resolve 和 reject 方法用于改变 Promise 的状态，并在状态改变时执行相应的回调函数。
+
+逻辑都是判断状态->改变状态->接收结果->执行回调(定时器模拟)
+
+```
+ resolve(result) {
+    if (this.status === Promise.PENDING) {
+      this.status = Promise.FULFILLED;
+      this.result = result;
+      setTimeout(() => {
+        this.resolveCallbacks.forEach(callback => callback(this.result));
+      }, 0);
+    }
+  }
+
+  reject(result) {
+    if (this.status === Promise.PENDING) {
+      this.status = Promise.REJECTED;
+      this.result = result;
+      setTimeout(() => {
+        this.rejectCallbacks.forEach(callback => callback(this.result));
+      }, 0);
+    }
+  }
+```
+
+## 4. then 方法
+
+then 方法用于**注册**在 Promise 成功或失败时执行的**回调函数**。
+
+then方法的参数是成功或者失败执行的回调函数，返回一个新的promise，支持链式调用，因为传入的是回调函数，所以我们要定义一个回调处理函数来对其进行处理，大概的逻辑就是执行回调、处理回调函数的返回值然后错误处理。
+
+然后状态处理部分：
+
+- **FULFILLED 状态**：如果当前 Promise 已经成功，则使用 `setTimeout` 将回调函数的执行延迟到下一个事件循环，确保异步执行，并调用 `handleCallback` 处理成功回调。
+- **REJECTED 状态**：如果当前 Promise 已经失败，则使用 `setTimeout` 将回调函数的执行延迟到下一个事件循环，确保异步执行，并调用 `handleCallback` 处理失败回调。
+- **PENDING 状态**：如果当前 Promise 仍在待定状态，则将成功和失败的回调函数分别存入 `resolveCallbacks` 和 `rejectCallbacks` 数组中，等待 Promise 状态改变后再执行。
+
+代码：
+
+```
+ then(onFulfilled, onRejected) {
+    onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+    onRejected = typeof onRejected === 'function' ? onRejected : reason => { throw reason; };
+
+    const self = this;
+    return new Promise((resolve, reject) => {
+      const handleCallback = (callback, result) => {
+        try {
+          const res = callback(result);
+          res instanceof Promise ? res.then(resolve, reject) : resolve(res);
+        } catch (error) {
+          reject(error);
+        }
+      };
+
+      if (self.status === Promise.FULFILLED) {
+        setTimeout(() => handleCallback(onFulfilled, self.result), 0);
+      } else if (self.status === Promise.REJECTED) {
+        setTimeout(() => handleCallback(onRejected, self.result), 0);
+      } else {
+        self.resolveCallbacks.push(result => handleCallback(onFulfilled, result));
+        self.rejectCallbacks.push(result => handleCallback(onRejected, result));
+      }
+    });
+  }
+```
+
+## 5. all 方法
+
+all 方法用于并发执行多个 Promise，并在所有 Promise 都成功时返回结果。
+
+代码的逻辑：遍历传入的promises数组->计数器++，保存执行每一个promise的结果->默认的计数器的值等于promises数组的长度的时候(已经执行完全部的prmise)解析结果数组->如果失败立即拒绝新的 Promise，并传递失败原因
+
+```
+all(promises) {
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      const len = promises.length;
+      const results = [];
+
+      if (len === 0) {
+        resolve(results);
+        return;
+      }
+
+      for (let i = 0; i < len; i++) {
+        promises[i].then(
+          value => {
+            count++;
+            results[i] = value;
+            if (count === len) {
+              resolve(results);
+            }
+          },
+          reason => reject(reason)
+        );
+      }
+    });
+  }
+```
+
+## 6. race 方法
+
+race 方法用于并发执行多个 Promise，并在第一个 Promise 完成（无论是成功还是失败）时返回结果。
+
+```
+ race(promises) {
+    return new Promise((resolve, reject) => {
+      for (const promise of promises) {
+        promise.then(resolve, reject);
+      }
+    });
+  }
+```
+
+总结：
+
+这段代码实现了一个自定义的 `Promise` 类，它模拟了 JavaScript 原生 `Promise` 的基本功能。以下是代码的主要功能和特点的总结：
+
+1. **状态管理**：
+   - 定义了三种状态：`PENDING`（待定）、`FULFILLED`（已实现）和 `REJECTED`（已拒绝）。
+   - 通过 `status` 属性跟踪当前状态。
+2. **构造函数**：
+   - 初始化 `status` 为 `PENDING`，`result` 为 `null`，并创建两个回调数组：`resolveCallbacks` 和 `rejectCallbacks`。
+   - 接受一个执行器函数（executor），并尝试执行它。如果执行器抛出错误，则调用 `reject` 方法。
+3. **状态变更方法**：
+   - `resolve(result)`：将状态从 `PENDING` 改为 `FULFILLED`，并存储结果。然后异步执行所有 `resolveCallbacks`。
+   - `reject(result)`：将状态从 `PENDING` 改为 `REJECTED`，并存储结果。然后异步执行所有 `rejectCallbacks`。
+4. **链式调用方法**：
+   - `then(onFulfilled, onRejected)`：接受两个回调函数，分别用于处理成功和失败的情况。
+   - 如果 `Promise` 已经是 `FULFILLED` 或 `REJECTED` 状态，则异步执行相应的回调。
+   - 如果 `Promise` 仍然是 `PENDING` 状态，则将回调添加到 `resolveCallbacks` 或 `rejectCallbacks` 中。
+   - 返回一个新的 `Promise`，以便支持链式调用。
+5. **静态方法**：
+   - `all(promises)`：接受一个 `Promise` 数组，返回一个新的 `Promise`。当所有 `Promise` 都成功时，返回它们的值数组；如果任何一个 `Promise` 失败，则立即拒绝。
+   - `race(promises)`：接受一个 `Promise` 数组，返回一个新的 `Promise`。当第一个 `Promise` 解决或拒绝时，立即解决或拒绝。
 

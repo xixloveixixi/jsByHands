@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写bind</title>
+</head>
+
+<body>
+    <script>
+        function fn() { };
+        // 总结一下bind:
+        // 返回的是一个函数
+        // 首先保留当前的函数，后面使用
+        // 因为后面需要维持原型链所以使用fn变量
+        // 联合args
+        // 当new的时候，this会发生改变，这个时候就要一个变量保留当前的this
+        // 返回的是一个函数
+        // 维持原型链
+        // 最后返回
+        // fn.bind(thisArg: any, ...argArray: any[])
+        Function.prototype.myBind = function (thisArg, ...argArray) {
+            // 返回的是一个函数，支持多次参数输入
+            const self = this;
+            const fn = function(...callArgs){
+                const args = [...argArray , ...callArgs];
+                const context = this instanceof self ? this : thisArg;
+                return self.apply(context , args);
+            }
+            // 维持原型链：
+            fn.prototype = Object.create(self.prototype);
+            return fn;
+        }
+        // 测试：
+        function greet(greeting, punctuation) {
+            return `${greeting},${this.name}${punctuation}`;
+        }
+        const person = { name: 'Alice' };
+        const greetPerson = greet.myBind(person, 'Hello');
+        console.log(greetPerson('!')); // "Hello, Alice!"
+        function Person(name) {
+            this.name = name;
+        }
+        Person.prototype.say = function () {
+            console.log(this.name);
+        };
+        const BoundPerson = Person.myBind(null, 'Bob');
+        const p = new BoundPerson();
+        p.say(); // "Bob"
+        console.log(p instanceof Person); // true
+    </script>
+
+</body>
+
+</html>

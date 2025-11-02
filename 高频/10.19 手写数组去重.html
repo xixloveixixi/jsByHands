@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写数组去重</title>
+</head>
+<body>
+    <script>
+        let arr = [1,2,3,2,1,2,3,2,1];
+        // 1、set
+        function quchong(arr){
+            return Array.from(new Set(arr));
+        }
+        console.log("set去重");
+        console.log(quchong(arr));
+        function quchong2(arr){
+            return arr.filter((item , index) => {
+                return arr.indexOf(item) === index;
+            })
+
+        }
+        console.log("重复出现去重");
+        console.log(quchong2(arr));
+    </script>
+    
+</body>
+</html>

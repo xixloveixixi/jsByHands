@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8.28练习</title>
+</head>
+<body>
+    <script>
+        // 1、手写promise封装ajax
+        function promiseAjax(){
+            return new Promise((resolve , reject) => {
+                const SERVER_URL = '/server';
+                const xhr = new XMLHttpRequest();
+                xhr.responseType="json";
+                xhr.setRequestHeader = ('Accept' , 'application/json');
+                xhr.onreadystatechange = () => {
+                    if(xhr.readyState !== 4){
+                        return;
+                    }
+                    if(xhr.status === 200){
+                        resolve(xhr.statusText);
+                    }else {
+                        reject(xhr.statusText);
+                    }
+                }
+                xhr.onerror = () => {
+                    reject(xhr.statusText);
+                }
+                xhr.ontimeout = () => {
+                    throw new Error('超时了!');
+                }
+                xhr.send();
+            })
+        }
+        // 2、将数字每千分位用逗号隔开
+        function format(val){
+            let strVal = String(val);
+            const [bigNum , smallNum] = strVal.includes('.') ? [strVal.split('.')[0] , strVal.split('.')[1]] : [strVal , ''];
+            let valReverseArr = Array.from(bigNum).reverse();
+            let ansReverse = [];
+            for(let i = 0 ; i < valReverseArr.length ; i++){
+                if(i > 0 && i % 3 === 0){
+                    ansReverse.push(',');
+                }
+                ansReverse.push(valReverseArr[i]);
+            }
+            return smallNum ? ansReverse.reverse().join('') + '.' + smallNum : ansReverse.reverse().join('');
+        }
+       console.log( format(1234.12));
+       console.log( format(123412));
+       function sumBigNumber(a , b){
+        if(!/^\d+$/.test(a) || !/^\d+$/.test(b)){
+              throw new Error("输入必须为数字");
+        }
+        let res = '';//存储结果->可以更加精确
+        let temp = 0;//进位的运算
+        // 将数字转换为数组便于进行运算
+         a = a.split('');
+         b = b.split('');
+        // 进行遍历
+        while(a.length || b.length || temp){
+            // 只要a或者b或者temp还有值
+            temp += ~~a.pop() + ~~b.pop();
+            res = (temp % 10) + res ;
+            temp = temp > 9 ? 1 : 0;//是否需要进位
+        }
+        return res.replace(/^0+/ , '') || '0';
+
+       }
+       // 测试用例
+console.log(sumBigNumber("123", "456"));      // 579
+console.log(sumBigNumber("999", "1"));        // 1000
+console.log(sumBigNumber("0", "0"));          // 0
+console.log(sumBigNumber("000", "000"));      // 0
+console.log(sumBigNumber("10000000000000000000", "1")); // 10000000000000000001
+console.log(sumBigNumber("99999999999999999999", "1")); // 100000000000000000000
+
+    </script>
+    
+</body>
+</html>

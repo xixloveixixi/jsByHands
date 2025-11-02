@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写数组乱序</title>
+</head>
+<body>
+    <script>
+        // 手写数组乱序
+        function luanxu(arr){
+            let len = arr.length;
+            for(let i = 0 ; i < len ; i++){
+                let random =Math.floor( Math.random() * len--);
+                [arr[i] , arr[random]] = [arr[random] , arr[i]];
+            }
+            console.log(arr);
+        }
+        let arr = [1,2,3,4,5];
+        luanxu(arr);
+    </script>
+    
+</body>
+</html>
