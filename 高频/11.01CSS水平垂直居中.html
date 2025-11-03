@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS水平垂直居中</title>
+</head>
+<body>
+    <div class="example">
+        CSS水平垂直居中
+    </div>
+    <style>
+        /* 1、绝对定位 */
+        /* .example{
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 50%;
+            transform: translateY((-50%));
+            color: brown;
+        } */
+         /* 2、flex布局 */
+         /* body{
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+         } */
+          /* 3、grid布局 */
+          body {
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            
+          }
+    </style>
+    
+</body>
+</html>
