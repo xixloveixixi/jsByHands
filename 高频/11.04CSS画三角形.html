@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11.04css画三角形</title>
+</head>
+<body>
+    <style>
+        /* 边框本质：CSS边框是围绕元素内容和内边距的线条，每个边框由宽度、样式和颜色组成。 */
+/* 交汇特性：当元素尺寸为0时，边框不再受内容限制，而是以45度角向中心收缩，形成四个三角形区域。 */
+/* 颜色显隐：通过控制边框颜色的可见性（实色/透明），定向显示特定方向的三角形。 */
+        .sqx{
+            border-top: 20px solid transparent;
+            border-left: 20px solid yellow;
+            border-right: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+        }
+    </style>
+   <div class="sqx"></div>
+</body>
+</html>
