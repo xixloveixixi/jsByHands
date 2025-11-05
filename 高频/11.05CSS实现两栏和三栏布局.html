@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS实现两栏和三栏布局</title>
+</head>
+<body>
+   <div class="two">
+    <div class="left">我是左边</div>
+    <div class="right">我是右边</div>
+   </div>
+   <div class="three">
+    <div class="left">我是左边</div>
+    <div class="mid">我是中间</div>
+    <div class="right">我是右边</div>
+   </div>
+   <style>
+    .two{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .two .left{
+        width: 200px;
+        height: 300px;
+        background-color: red;
+    }
+    .two .right{
+        width: 200px;
+        height: 300px;
+        background-color: yellow;
+    }
+      .three{
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+        .three .left{
+        width: 200px;
+        height: 300px;
+        background-color: black;
+    }
+    .three .right{
+        width: 200px;
+        height: 300px;
+        background-color: green;
+    }
+     .three .mid{
+        flex: 1;
+        background-color: yellow;
+    }
+   </style>
+    
+</body>
+</html>
