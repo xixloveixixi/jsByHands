@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布订阅</title>
+</head>
+
+<body>
+    <script>
+        // 先初始化一个events对象
+        // 调用on方法时，将事件名称eventName和监听函数fn存入events对象中
+        // 调用emit方法时，通过事件名称eventName从events对象中取出对应的回调并执行
+        // off方法：通过事件名称eventName找出events对象对应的监听函数并清除
+        // once方法：被emit触发一次后就立即调用off方法移除监听，也就是调用once传入的监听函数只会执行一次
+        class EventEmitter {
+            // 初始化一个events对象
+            constructor() {
+                this.events = {};
+            }
+            // 调用on方法
+            on(eventName, fn) {
+                // 如果之前没有eventName
+                if (!this.events[eventName]) {
+                    this.events[eventName] = [];
+                }
+                // 把函数push进去
+                this.events[eventName].push(fn);
+                return this;
+            }
+            // 调用emit方法
+            emit(eventName, ...args) {
+                if (!this.events[eventName]) {
+                    return this;
+                }
+                this.events[eventName].forEach(fn => {
+                    fn.apply(this, args);
+                });
+                return this;
+            }
+            //    off方法：通过事件名称eventName找出events对象对应的监听函数并清除
+            off(eventName) {
+                if (!this.events[eventName]) {
+                    return this;
+                }
+                delete this.events[eventName];// delete 关键字彻底移除这个属性，这样更干净
+                return this;
+            }
+            // once方法：注册一个监听器，当它第一次被触发后，就立即将自己移除
+            once(eventName , fn){
+                const func = function(...args){
+                    // 被触发就移除->调用off
+                    this.off(eventName);
+                    // 执行原始的函数
+                    fn.apply(this , args);
+                }
+                // 注册监听器
+                this.on(eventName , func);
+                return this;
+            }
+        }
+        console.log('--- 测试 1: on 和 emit ---');
+const emitter1 = new EventEmitter();
+let test1Result = '';
+emitter1.on('test', () => {
+    test1Result = 'on 和 emit 工作正常';
+});
+emitter1.emit('test');
+console.log(test1Result); // 预期输出: "on 和 emit 工作正常"
+console.log('--- 测试 1 结束 ---\n');
+
+
+console.log('--- 测试 2: emit 多个监听器 ---');
+const emitter2 = new EventEmitter();
+let test2Result = [];
+emitter2.on('multi', () => test2Result.push('listener1'));
+emitter2.on('multi', () => test2Result.push('listener2'));
+emitter2.emit('multi');
+console.log(test2Result); // 预期输出: ["listener1", "listener2"]
+console.log('--- 测试 2 结束 ---\n');
+
+
+console.log('--- 测试 3: emit 传递参数 ---');
+const emitter3 = new EventEmitter();
+let test3Result = '';
+emitter3.on('args', (greeting, name) => {
+    test3Result = `${greeting},${name}!`;
+});
+emitter3.emit('args', 'Hello', 'World');
+console.log(test3Result); // 预期输出: "Hello, World!"
+console.log('--- 测试 3 结束 ---\n');
+
+
+console.log('--- 测试 4: off 移除所有监听器 ---');
+const emitter4 = new EventEmitter();
+let test4Result = '未被触发';
+emitter4.on('remove-all', () => {
+    test4Result = '我被触发了，这是个bug！';
+});
+emitter4.off('remove-all'); // 移除所有 'remove-all' 的监听器
+emitter4.emit('remove-all');
+console.log(test4Result); // 预期输出: "未被触发"
+console.log('--- 测试 4 结束 ---\n');
+
+
+console.log('--- 测试 5: off 移除特定监听器 ---');
+const emitter5 = new EventEmitter();
+let test5Result = [];
+const listenerA = () => test5Result.push('A');
+const listenerB = () => test5Result.push('B');
+emitter5.on('specific', listenerA);
+emitter5.on('specific', listenerB);
+emitter5.off('specific', listenerA); // 只移除 listenerA
+emitter5.emit('specific');
+console.log(test5Result); // 预期输出: ["B"]
+console.log('--- 测试 5 结束 ---\n');
+
+
+console.log('--- 测试 6: once 只触发一次 ---');
+const emitter6 = new EventEmitter();
+let test6Count = 0;
+emitter6.once('once', () => {
+    test6Count++;
+});
+emitter6.emit('once'); // 第一次触发
+emitter6.emit('once'); // 第二次触发
+emitter6.emit('once'); // 第三次触发
+console.log(test6Count); // 预期输出: 1
+console.log('--- 测试 6 结束 ---\n');
+
+
+console.log('--- 测试 7: once 也能接收参数 ---');
+const emitter7 = new EventEmitter();
+let test7Result = '';
+emitter7.once('once-args', (data) => {
+    test7Result = data;
+});
+emitter7.emit('once-args', '这是 once 的参数');
+emitter7.emit('once-args', '这不应该被看到');
+console.log(test7Result); // 预期输出: "这是 once 的参数"
+console.log('--- 测试 7 结束 ---\n');
+
+
+console.log('--- 测试 8: 链式调用 ---');
+const emitter8 = new EventEmitter();
+let test8Result = '';
+emitter8
+  .on('chain', () => { test8Result += 'step1'; })
+  .on('chain', () => { test8Result += '->step2'; })
+  .emit('chain');
+console.log(test8Result); // 预期输出: "step1->step2"
+console.log('--- 测试 8 结束 ---\n');
+
+console.log('所有测试完成！');
+    </script>
+
+</body>
+
+</html>
