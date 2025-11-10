@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写事件委托</title>
+</head>
+<body>
+         <ul>
+        <li><span>Item 1: <strong>click1</strong></span></li>
+        <li>click2</li>
+        <li>click3</li>
+    </ul>
+    <script>
+        const ul = document.querySelector('ul');
+        ul.addEventListener('click' , (e) => {
+            // console.log(e.target);
+        //    console.log(e.target.innerHTML)
+           let target = e.target;
+           while(target && target !== ul ){
+            if(target.tagName === 'LI'){
+                console.log(`li输出内容${target.innerHTML}`);
+                break;
+            }
+            target = target.parentNode;
+            
+           }
+           if(target === ul){
+                console.log('你点击了ul')
+            }
+        }
+        
+    )
+    // e.target 指向的是实际被点击的最深层元素，而不一定是我们想要委托的那个元素（在这里是 <li>）。
+    //Item 1: <strong>click1</strong>
+    </script>
+    
+</body>
+</html>
