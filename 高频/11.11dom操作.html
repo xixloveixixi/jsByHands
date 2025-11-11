@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<input type="text" placeholder="请输入tag内容" id="input">
+<div id="tagContainer"></div>
+<button>取消全部高亮</button>
+<script>
+    const tags = [];
+    document.getElementById('input').addEventListener('keydown' , (e) => {
+       if(e.key === 'Enter'){
+        const tagText = e.target.value.trim();
+        if(tagText === ''){
+            return ;
+        }
+        tags.push(tagText);
+        console.log(tags)
+       }
+        
+    })
+   
+</script>
+<!-- 需求描述：
+
+有一个输入框，用户输入内容后按回车键（Enter）可以生成一个标签。
+每个标签显示为一个小块，标签内容为用户输入的文本。
+每个标签右侧有一个“×”按钮，点击可以删除该标签。
+标签不能重复（如果输入重复内容，不生成新标签，可以给出提示）。
+每个标签被点击时，高亮显示（比如加个边框或者背景色变化），再次点击取消高亮。
+页面上有一个按钮，点击后可以删除所有高亮的标签。 -->
+
+    
+</body>
+</html>
