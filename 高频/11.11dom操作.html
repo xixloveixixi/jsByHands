@@ -11,13 +11,26 @@
 <button>取消全部高亮</button>
 <script>
     const tags = [];
+    const tagContainer = document.getElementById('tagContainer');
     document.getElementById('input').addEventListener('keydown' , (e) => {
        if(e.key === 'Enter'){
         const tagText = e.target.value.trim();
         if(tagText === ''){
             return ;
         }
-        tags.push(tagText);
+        if(!tags.includes(tagText)){
+           // 接收tag在tags当中
+            tags.push(tagText);
+        }else {
+            return ;
+        }
+       
+        e.target.value = '';
+        // 创建元素
+        const tagsEle = document.createElement('span');
+        tagsEle.className = 'tag';
+        tagsEle.textContent = tagText;
+        tagContainer.appendChild(tagsEle);
         console.log(tags)
        }
         
