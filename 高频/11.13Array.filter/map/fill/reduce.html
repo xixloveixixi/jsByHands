@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Array.filter/map/fill/reduce</title>
+</head>
+<body>
+    <script>
+        let arr = [1,2,3,4]
+        Array.prototype.myFilter = function(fn){
+            let arr = this;
+            let newArr = [];
+            for(let i = 0 ; i < arr.length ; i++){
+                if(fn(arr[i])){
+                    newArr.push(arr[i]);
+                }
+            }
+            return newArr;
+        }
+        const filterArr = arr.myFilter((value) => value % 2)
+        console.log('filterArr',filterArr)
+         Array.prototype.myMap = function(fn){
+            let arr = this;
+            let newArr = [];
+            for(let i = 0 ; i < arr.length ; i++){
+                newArr.push(fn(arr[i]))
+            }
+            return newArr;
+        }
+        const mapArr = arr.myMap((value) => value % 2)
+        console.log(mapArr)
+        const fillArr = arr.fill(1 , 1 , 3);
+        console.log(fillArr)
+           Array.prototype.myFill = function(value , start , end ){
+            let arr = this;
+            let newArr = [...arr];
+            for(let i = start ; i <= end ; i++){
+                newArr[i] = value;
+            }
+            return newArr;
+        }
+        const fillArr2 = arr.myFill(1 , 1 , 3);
+        console.log('fillArr2' , fillArr2)
+        // const sum = arr.reduce((total , acc) => {
+        //     total += acc;
+        //     return total;
+        // } , 0)
+        // console.log(sum);
+         Array.prototype.myReduce = function(reducer , initialVal ){
+            let arr = this;
+            // 1、判断reducer是否为函数
+            if(typeof reducer !=="function"){
+                throw Error('reducer应为函数');
+            }
+            // 2、空数组处理
+            let len = arr.length;
+            if(len === 0 && arguments.length < 2 ) {
+                throw Error('reducer为空以及者数组为空数组')
+            };
+            // 3、获取初始值
+            let accumulator;
+            let startIndex; 
+            if(arguments.length >= 2 ){
+                startIndex = 0 ;
+                accumulator = initialVal;
+            }else {
+                // // 没有初始值，使用数组的第一个元素作为初始值
+                startIndex = 1;
+                accumulator = initialVal[0];
+            }
+            // 4、遍历数组
+            for(let i = startIndex ; i < len ; i++){
+                if(i in arr){
+                    accumulator = reducer.call(
+                        null,
+                        accumulator,
+                        arr[i],
+                        i,
+                        arr
+                    )
+                }
+            }
+            return accumulator;
+            
+        }
+        // 测试用例
+console.log('=== 基础测试 ===');
+// 求和
+const numbers = [1, 2, 3, 4, 5];
+const sum = numbers.myReduce((acc, curr) => acc + curr, 0);
+console.log('求和:', sum); // 15
+
+// 求积
+const product = numbers.myReduce((acc, curr) => acc * curr, 1);
+console.log('求积:', product); // 120
+
+// 找最大值
+const max = numbers.myReduce((acc, curr) => Math.max(acc, curr), -Infinity);
+console.log('最大值:', max); // 5
+
+console.log('\n=== 无初始值测试 ===');
+// 不提供初始值
+const sum2 = numbers.myReduce((acc, curr) => acc + curr);
+console.log('无初始值求和:', sum2); // 15
+
+console.log('\n=== 对象数组测试 ===');
+const users = [
+    { name: 'Alice', age: 25 },
+    { name: 'Bob', age: 30 },
+    { name: 'Charlie', age: 35 }
+];
+
+// 将对象数组转换为对象
+const userObj = users.myReduce((acc, user) => {
+    acc[user.name] = user.age;
+    return acc;
+}, {});
+console.log('转换为对象:', userObj);
+
+console.log('\n=== 字符串测试 ===');
+const str = ['H', 'e', 'l', 'l', 'o'];
+const result = str.myReduce((acc, curr) => acc + curr, '');
+console.log('字符串拼接:', result); // "Hello"
+
+console.log('\n=== 边界情况测试 ===');
+// 空数组（有初始值）
+const empty1 = [].myReduce((acc, curr) => acc + curr, 10);
+console.log('空数组有初始值:', empty1); // 10
+
+// 单元素数组（无初始值）
+const single = [42].myReduce((acc, curr) => acc + curr);
+console.log('单元素数组:', single); // 42
+
+// 测试跳过空位
+const sparseArray = [1, , 3, , 5];
+const sparseSum = sparseArray.myReduce((acc, curr) => acc + curr, 0);
+console.log('稀疏数组求和:', sparseSum); // 9
+
+console.log('\n=== 与原生reduce对比测试 ===');
+const testArray = [1, 2, 3, 4];
+const nativeResult = testArray.reduce((acc, curr) => acc + curr, 0);
+const myResult = testArray.myReduce((acc, curr) => acc + curr, 0);
+console.log('原生reduce结果:', nativeResult);
+console.log('手写reduce结果:', myResult);
+console.log('结果一致:', nativeResult === myResult);
+    </script>
+    
+</body>
+</html>
