@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const flatTools = [
+  { id: 't1', name: 'GoogleSearch', parentId: null },
+  { id: 't2', name: 'ReadWebsite', parentId: 't1' },
+  { id: 't3', name: 'Calculator', parentId: null },
+  { id: 't4', name: 'Summarize', parentId: 't2' },
+  { id: 't5', name: 'DataParser', parentId: 't4' },
+];
+
+function changeToTree(list){
+    let treeMap = new Map();
+    // 遍历第一遍放入map当中
+    for(let i = 0  ; i < list.length ; i++){
+        treeMap.set(list[i].id , {...list[i] , children: []});
+    }
+    // 2、进行第二次的遍历
+    let ans = [];
+    for(let j = 0 ; j < list.length ; j++){
+        let currrentNode = treeMap.get(list[j].id)
+        // 如果parantId为null，就代表没有父节点，直接push
+        if(list[j].parentId === null){
+            ans.push(currrentNode);
+        }else {
+            // 存在parentId的情况，就要找对对应的节点成为它的孩子
+            const parentNode = treeMap.get(list[j].parentId);
+            parentNode.children.push(currrentNode);
+        }
+    }
+    return ans;
+
+
+}
+const tree = changeToTree(flatTools);
+console.log(tree);
+    </script>
+</body>
+</html>
