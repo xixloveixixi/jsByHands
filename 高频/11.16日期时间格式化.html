@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日期时间格式化</title>
+</head>
+
+<body>
+    <script>
+        // 示例1：用户登录日志
+        const loginLog = {
+            timestamp: new Date('2025-08-29T11:05:58'),
+            user: 'Alice',
+            action: 'login',
+            ip: '192.168.1.100'
+        };
+
+        // 示例2：数据库查询日志
+        const queryLog = {
+            timestamp: new Date('2025-01-15T08:30:00'),
+            db: 'user_db',
+            query: 'SELECT * FROM users',
+            duration: 123 // 毫秒
+        };
+
+        // 调用函数并输出结果
+        console.log(formatLog(loginLog, 'YYYY-MM-DD HH:mm:ss'));
+        期望输出: "2025-08-29 11:05:58 | user: Alice, action: login, ip: 192.168.1.100"
+
+        console.log(formatLog(queryLog, 'DD/MM/YYYY HH:mm'));
+        // 期望输出: "15/01/2025 08:30 | db: user_db, query: SELECT * FROM users, duration: 123"
+        function formatLog(log, format) {
+            const data = log.timestamp;
+            // console.log(data.getFullYear());
+            const year = data.getFullYear();
+            const month = data.getMonth() + 1 < 10 ? '0' + (data.getMonth() + 1) : data.getMonth() + 1; 
+            const day = data.getDate() < 10 ? '0' + data.getDate() : data.getDate();        
+            const hours = data.getHours() < 10 ? '0' + data.getHours() : data.getHours();
+            const minutes = data.getMinutes() < 10 ? '0' + data.getMinutes() : data.getMinutes();
+            const seconds = data.getSeconds() < 10 ? '0' + data.getSeconds() : data.getSeconds();
+            let formattedDate = format.replace('YYYY', year)
+                .replace('MM', month)
+                .replace('DD', day)
+                .replace('HH', hours)
+                .replace('mm', minutes)
+                .replace('ss', seconds);
+            return formattedDate;
+        }
+
+
+    </script>
+
+</body>
+
+</html>
