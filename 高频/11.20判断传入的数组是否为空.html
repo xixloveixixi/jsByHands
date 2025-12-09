@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+        function check(obj){
+            if(Array.isArray(obj)){
+                if(obj.length === 0){
+                    return '数组为空'
+                }
+            }else {
+                let hasValidPair = Object.values(obj).some(value => value != null)
+                return hasValidPair;
+            }
+
+        }
+        let arr = [];
+        console.log(check(arr))
+        let obj = {
+            name:'jyx',
+            age :null ,
+        }
+        console.log(check(obj))
+    </script>
+    
+</body>
+</html>

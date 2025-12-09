@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+       /* 填写样式 */
+    </style>
+</head>
+
+<body>
+    <!-- 填写标签 -->
+    <script type="text/javascript">
+        // 填写JavaScript
+        function flatArray(array){
+            let newArr = [];
+            for(let i = 0 ; i < array.length ; i++){
+                if(Array.isArray(array[i])){
+                    newArr = newArr.concat(flatArray(array[i]))
+                }else {
+                    newArr.push(array[i]);
+                }
+            }
+            return newArr;
+        }
+        const arr = ['a',['b','c',['d']]];
+        // console.log(flatArray(arr));
+        const flatArr = flatArray(arr);
+        console.log(flatArr);
+    </script>
+</body>
+
+</html>
