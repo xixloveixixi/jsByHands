@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现instanceOf</title>
+</head>
+
+<body>
+    <script>
+        let arr = [1, 2, 3, 4];
+        let num = 2;
+        // console.log(num instanceof Number)
+        // console.log(arr instanceof Array);
+        // 沿着原型链寻找
+        function myInstanceOf(val, comVal) {
+            // todo1:由于instance要检测的是某对象，需要有一个前置判断条件
+            // 首先检查 val 是否为 null，然后再检查它是否为 object 类型，逻辑上更清晰，也避免了 typeof null 的陷阱。
+            if (val === null || typeof val !=="object") {
+                return false;
+            }
+            // todo2:当前实例对象原型链的原型链
+            // let valPrototype = val.__proto__;//or
+            let valPrototype = Object.getPrototypeOf(val);
+            while (valPrototype !== null) {
+                // 进行遍历原型链,看是否存在构造函数的原型
+                if (valPrototype === comVal.prototype) {
+                    return true;
+                }
+                valPrototype = Object.getPrototypeOf(valPrototype);
+                // valPrototype = valPrototype.__proto__;
+            }
+            return false;
+        }
+        function Person() { }
+        const p = new Person();
+
+        console.log(myInstanceOf(p, Person)); // true
+        console.log(myInstanceOf(p, Object)); // true
+        console.log(myInstanceOf(p, Array));  // false
+        // 存在很大的问题
+        // __proto__(或[[Prototype]]) 是实例的原型，是实例对象内部指向其构造函数 prototype 属性的指针。我们要查找的是这个链条。
+        // prototype 是构造函数的原型对象，所有由该构造函数创建的实例都会继承这个对象上的属性。
+    </script>
+
+</body>
+
+</html>
