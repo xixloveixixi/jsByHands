@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现new的过程</title>
+</head>
+<body>
+    <script>
+        // function myNew (constructor , ...args){
+        //     // 1、判断constructor的类型
+        //     if(typeof constructor !=="function"){
+        //         throw TypeError('传入的构造函数类型应该为函数类型！！')
+        //     }
+        //     // // 2、创建一个全新的对象
+        //     // let newObj = Array.isArray(constructor) ? [] : {};
+        //     // // 3、原型链继承：将构造函数的原型链给全新的对象
+        //     // Object.setPrototypeOf(newObj , constructor.prototype);
+        //     // 优化：
+        //     let newObj = Object.create(constructor.prototype);
+        //     // 4、执行构造函数
+        //     let res = constructor.apply(newObj , args);
+        //     // 4、返回处理的函数，记得要排除null
+        //     return (res !== null && typeof res ==="object") ? res : newObj;
+        // }
+        // // 总结new：
+        // // 构造函数类型拦截->创建一个新对象(包含了构造函数的原型)->执行构造函数->返回值
+        function myNew(constructor , ...args){
+            // 1、拦截
+            if(typeof constructor !=="function"){
+                throw TypeError('构造函数的类型应为函数类型！！！');
+            }
+            // 2、创建对象并把原型传给他
+            let newObj = Object.create(constructor.prototype);
+            // 3、执行构造函数
+            let res = constructor.apply(newObj , args);
+            // 4、返回
+            return (res !== null && typeof res ==="object" ) ? res : newObj;
+
+        }
+    </script>
+    
+</body>
+</html>
