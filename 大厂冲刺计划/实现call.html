@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实现call</title>
+</head>
+<body>
+    <script>
+        // const fn = () => {};
+        // fn.call();
+        // null.call()
+        // ''.call()
+        // [1,2,3].call()
+        // let obj =  {
+        //     name:'jyx'
+        // }
+        // obj.call()
+        // fn.apply()thisArg: any, argArray?: any
+        // 执行call一般都是在函数上面执行的,所以this就是函数类型,但是保险起见还是要判断一下
+        // 然后就是处理thisArg指向了,他可能会传入null或者是undefied,或者不是obj,前者指向window,后者转换为obj
+        // 给新的thisArg指向添加函数属性，并执行，执行的时候要注意使用...运算符
+        // 使用完之后记得删除这个属性噢
+        Function.prototype.myCall = function(thisArg = window ,  ...argArray){
+            // 1、类型拦截
+            if(typeof this !=="function"){
+                throw TypeError(`${thisArg} is not a function`);
+            }
+            // 2、处理thisArg为null或者undefied的情况
+            if(thisArg === null || thisArg === undefined){
+                thisArg = window
+            }else {
+                // 3、确保thisArg为obj
+                thisArg = Object(thisArg);
+            }
+            // 4.定制函数
+            let fnKey = Symbol('key');
+            thisArg[fnKey] = this;
+            // 5.执行
+            let res = thisArg[fnKey](...argArray);
+            // 6.删除
+            delete thisArg[fnKey];
+            return res;
+            
+
+        }
+    </script>
+    
+</body>
+</html>
