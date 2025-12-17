@@ -28,7 +28,7 @@ Function.prototype.myBind = function(thisArg){
     // bind是在call的基础上会返回一个函数
     let fn = this;
     return function(...args){
-        fn.myCall(thisArg , args);
+        fn.myCall(thisArg , ...args);
 
     }
 
