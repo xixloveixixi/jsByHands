@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写数组扁平</title>
+</head>
+<body>
+    <script>
+        const arr = [1,2,[3,4,[5]]];
+        arr.flat();
+        // todo1:挂载到数组上
+        Array.prototype.myFlat = function(){
+            // 判定类型：是数组噢！
+            if(!Array.isArray(this)){
+                throw TypeError('this must be Array');
+            }
+            function flat(arr){
+                let newArr = [];
+                for(let i = 0 ; i < arr.length ; i++){
+                    if(Array.isArray(arr[i])){
+                        // 不使用concat
+                        newArr.push(...flat(arr[i]));
+                    }else {
+                        newArr.push(arr[i]);
+                    }
+                }
+                return newArr;
+            }
+            return flat(this);
+        }
+        console.log(arr.myFlat())
+    </script>
+    
+</body>
+</html>
