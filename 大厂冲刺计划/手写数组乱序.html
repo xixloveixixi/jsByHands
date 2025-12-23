@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手写数组乱序</title>
+</head>
+<body>
+    <script>
+        let arr = [1,2,3,4,5];
+        function arrRandom(arr){
+            // 交换
+            let len = arr.length;
+            // 1、只需要遍历到 len - 1 即可，最后一个元素不需要再交换
+            for(i = 0 ; i < len - 1 ; i++){
+            // 2、生成从 i 到 len-1 之间的随机索引（包括 i 和 len-1）
+            // Math.floor 是为了取整，范围是 [i, len)
+                let random = Math.floor(Math.random() * (len - 1)) + 1;
+                [arr[i] , arr[random]] = [arr[random] , arr[i]];
+            }
+            return [...arr];
+        }
+        console.log(arrRandom(arr))
+    </script>
+    
+</body>
+</html>
