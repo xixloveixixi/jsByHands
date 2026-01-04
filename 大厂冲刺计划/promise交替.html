@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>promise交替</title>
+</head>
+<body>
+    <script>
+        function red (){
+            console.log('red')
+        }
+         function yellow (){
+            console.log('yellow')
+        }
+         function green (){
+            console.log('green')
+        }
+        function light(fn , timer){
+            return new Promise((resolve , reject) => {
+                setTimeout(() => {
+                    fn();
+                    resolve();//更新状态
+                } , timer)
+
+            })
+        }
+        function step (){
+           light(red,1000)
+           .then(() => light(yellow,2000))
+           .then(() => light(green,3000))
+           .then(() => step())
+        }
+        step()
+    </script>
+    
+</body>
+</html>
